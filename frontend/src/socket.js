@@ -7,7 +7,7 @@ export const state = reactive({
   barEvents: []
 });
 
-const URL = process.env.NODE_ENV === "production" ? undefined : "http://192.168.1.13:3000";
+const URL = import.meta.env.VITE_API_URL;
 
 export const socket = io(URL);
 
