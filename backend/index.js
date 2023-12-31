@@ -50,7 +50,7 @@ io.on("connection", onConnection);
 async function startApp() {
     try {
         await mongoose.connect(DB_URL)
-        server.listen(PORT, "192.168.1.13", () => console.log('listening on *:3000'))    
+        server.listen(PORT, () => console.log('listening on *:3000'))    
     } catch (e) {
         console.log(e)
     }
