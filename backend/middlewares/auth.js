@@ -1,9 +1,12 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 import jwt from "jsonwebtoken";
 
-const TOKEN = "WepoekYFpo"
+const TOKEN = process.env.TOKEN
 
 const verifyToken = (req, res, next) => {
-    const token = req.cookies.auth
+    const token = req.headers["authorization"]
     if (token) {
         try {
             req.user = jwt.verify(token, TOKEN);

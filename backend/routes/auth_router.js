@@ -7,10 +7,12 @@ router.get("/", (req, res) => {
     res.send("Hello world")
 })
 
-router.post('/login/', UserController.login);
+router.post('/login', UserController.login);
 
-router.post('/register/', UserController.register);
+router.post('/register', UserController.register);
 
-router.get('/get_me/', auth, UserController.getMe)
+router.get('/search', auth, UserController.search);
+
+router.get('/get_me', auth, UserController.getMe)
 
 export default router

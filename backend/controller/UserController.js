@@ -1,12 +1,14 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
 import User from "../models/User.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 
-const TOKEN = "WepoekYFpo"
+const TOKEN = process.env.TOKEN
 class UserController {
      async register(req, res) {
          try {
-             const {username, email, password } = req.body;
+             const {username, email, password, firstname, lastname } = req.body;
 
              if (!(email && password && username)) {
                  res.status(400).send("All input is required");
@@ -22,6 +24,8 @@ class UserController {
              const user = await User.create({
                  username: username,
                  email: email.toLowerCase(),
+                 firstname: firstname,
+                 lastname: lastname,
                  password: encryptedPassword,
              });
 
@@ -32,11 +36,7 @@ class UserController {
                      expiresIn: "2h",
                  }
              );
-
-             res.cookie('auth', token);
-             res.status(201).json({
-                 username: user.username
-             });
+             res.status(201).json({ token });
          } catch (err) {
              console.log(err);
          }
@@ -58,11 +58,19 @@ class UserController {
                         expiresIn: "2h",
                     }
                 );
-                res.cookie('auth', token);
-                res.status(200).json({username: user.username})
+                res.status(200).json({token})
             } else {
                 res.status(400).send("Invalid Credentials");
             }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    async search(req, res) {
+        try {
+            const {search} = req.query
+            const users = await User.find({username: { "$regex": search, "$options": "i" }, _id: {$ne: req.user.user_id}}, "_id username firstname lastname").limit(10)
+            res.status(200).json(users)
         } catch (err) {
             console.log(err);
         }
