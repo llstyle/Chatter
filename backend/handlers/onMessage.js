@@ -58,6 +58,20 @@ const messagesHandlers = async (socket) => {
                 message: "Any troubles on server"
             });
         }
+    }),
+    socket.on("message:view", async (messageId, callback) => {
+        try {
+            const message = await Message.findOneAndUpdate({_id: messageId }, { $addToSet: {viewed: socket.user.user_id} }, {new: true})
+            callback({
+                status: "OK",
+                message
+            });
+        } catch {
+            callback({
+                status: "NOK",
+                message: "Any troubles on server"
+            });
+        }
     })
 }
 

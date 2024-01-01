@@ -14,17 +14,32 @@ const chats = ref([])
 const selectedChat = ref("")
 const chatMessages = ref([])
 
+const setLastMessage = (message) => {
+  const chat = chats.value.find(c => c._id === message.chat._id)
+
+  if (chat) {
+    chat.message = [message]
+  }
+}
 
 onMounted(() => {
   if(token) {
     socket.auth = { token }
     socket.connect()
+    socket.emit("chats")
   }
 })
 
 onUnmounted(() => {
   socket.disconnect()
+  socket.off("connect");
+  socket.off("chats");
+  socket.off("chat:new");
+  socket.off("message:new");
+  socket.off("connect_error");
+  socket.off("credentials");
 })
+
 socket.on("credentials", (user) => {
   currUser.value = user
 })
@@ -42,10 +57,15 @@ socket.on("chat:new", (chat) => {
 socket.on("message:new", (message) => {
     if(message.chat._id === selectedChat.value) {
       chatMessages.value.push(message)
-    }
-    const chat = chats.value.find(c => c._id === message.chat._id)
-    if (chat) {
-      chat.message = [message]
+
+      socket.emit("message:view", message._id, (response) => {
+        if(response.status === "OK") {
+          setLastMessage(response.message)
+        }
+      })
+
+    } else {
+      setLastMessage(message)
     }
 })
 
@@ -60,10 +80,12 @@ const selectChat = (chatid) => {
     if(response.status === "OK") {
       selectedChat.value = chatid
       chatMessages.value = response.messages
+
       const chat = chats.value.find(chat => chat._id === selectedChat.value)
       if (chat) {
         chat.message = [response.messages.at(-1)]
       }
+      
     }
   })
 }
@@ -79,16 +101,10 @@ const createMessage = (content) => {
   socket.emit("message:new", selectedChat.value, content, (response) => {
     if(response.status === "OK") {
       chatMessages.value.push(response.message)
-      const chat = chats.value.find(chat => chat._id === selectedChat.value)
-      if (chat) {
-        chat.message = [response.message]
-      }
+      setLastMessage(response.message)
     }
   })
 } 
-
-const connected = computed(() => state.connected)
-
 </script>
 
 <template>

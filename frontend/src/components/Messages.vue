@@ -3,8 +3,12 @@
       <div class="message-list" ref="messageList">
         <div v-for="message in messages" :key="message._id" class="message" :class="{ 'sent': message.owner._id === user }">
           <div class="message-content">{{ message.content }}</div>
-          <div class="message-meta" v-if="message.owner._id === user">You</div>
-          <div class="message-meta" v-else >{{ message.owner.firstname }} {{ message.owner.lastname }}</div>
+          <div class="additional-container">
+            <div class="message-meta" v-if="message.owner._id === user">You</div>
+            <div class="message-meta" v-else >{{ message.owner.firstname }} {{ message.owner.lastname }}</div>
+
+            <div class="message-meta">{{ (new Date(message.createdAt)).toLocaleString('en-GB', {day:'numeric', month: 'long', year:'numeric'}) }}</div>
+          </div>
         </div>
       </div>
       <div class="message-input">
@@ -120,6 +124,10 @@
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%) 
+  }
+  .additional-container {
+    display: flex;
+    justify-content: space-between;
   }
   </style>
   

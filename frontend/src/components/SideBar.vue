@@ -23,7 +23,7 @@
   </template>
   
   <script setup>
-  import { ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import axios from 'axios';
   
   const props = defineProps({
@@ -55,6 +55,7 @@
     searchQuery.value = ""
     emit('createChat', user._id)
   }
+
   watch(searchQuery, async (val) => {
     if(val) {
         findUsers(val)
@@ -62,7 +63,6 @@
       searchUsers.value = []
     }
   })
-
   </script>
   
   <style scoped>

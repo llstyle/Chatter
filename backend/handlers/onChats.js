@@ -2,21 +2,31 @@ import mongoose from "mongoose";
 import Chat from "../models/Chat.js"
 import Message from "../models/Message.js"
 
-const chatsHandlers = async (socket) => {
-    const chats =  await Chat.aggregate([
-        { $match: { users: {"$in": [new mongoose.Types.ObjectId(socket.user.user_id)]} } },
-        {
-          $lookup:  { from: 'messages', localField: '_id', foreignField: 'chat', as: 'message' }
-        },
-        {
-            $lookup:  { from: 'users', localField: 'users', foreignField: '_id', as: 'users' }
-        },
-        { 
-          $addFields: { "message": { "$slice": ["$message", -1] }}
+const chatsHandlers = (socket) => {
+    socket.on("chats", async () => {
+        try {
+            const chats =  await Chat.aggregate([
+                { $match: { users: new mongoose.Types.ObjectId(socket.user.user_id) } },
+                {
+                  $lookup:  { from: 'messages', localField: '_id', foreignField: 'chat', as: 'message' }
+                },
+                {
+                    $lookup:  { 
+                        from: 'users',
+                        let: { id: '$users'},
+                        pipeline: [{ $match: { $expr: { $in: [ "$_id", "$$id" ] }} }, { "$project": { "firstname": 1, "lastname": 1, "_id": 1 }}],
+                        as: 'users'
+                    }
+                },
+                { 
+                  $addFields: { "message": { "$slice": ["$message", -1] }}
+                }
+            ])            
+            socket.emit("chats", chats)
+        } catch(e) {
+            console.log(e)
         }
-    ])
-
-    socket.emit("chats", chats)
+    })
 
     socket.on("chat:new", async (chatter, callback) => {
         try {
@@ -33,7 +43,6 @@ const chatsHandlers = async (socket) => {
 
             let chat = await Chat.create({users: users})
             chat = await chat.populate("users", "_id firstname lastname")
-            
             chat.users.forEach((user) => {
                 socket.to(user._id.toString()).emit("chat:new", chat)
             })
