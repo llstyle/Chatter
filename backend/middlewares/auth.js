@@ -3,7 +3,7 @@ dotenv.config()
 
 import jwt from "jsonwebtoken";
 
-const TOKEN = process.env.TOKEN
+const TOKEN = process.env.JWT_ACCESS_SECRET
 
 const verifyToken = (req, res, next) => {
     const token = req.headers["authorization"]

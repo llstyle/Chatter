@@ -1,6 +1,11 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import Header from './components/Header.vue';
+import {useUserStore} from '@/stores/user.store.js'
+import "@/assets/fonts/font.css"
+
+const userStore = useUserStore()
+
 </script>
 
 <template>
@@ -21,9 +26,15 @@ body, html, #app {
   display: flex;
   flex-flow: column;
   height: 100vh;
+  background-color: black;
+  color: chartreuse;
 }
 
 * {
   box-sizing: border-box;
+  font-family: "Pixel";
+}
+::placeholder {
+  color: black;
 }
 </style>

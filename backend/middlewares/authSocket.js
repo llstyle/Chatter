@@ -3,7 +3,7 @@ dotenv.config()
 
 import jwt from "jsonwebtoken";
 
-const TOKEN = process.env.TOKEN
+const TOKEN = process.env.JWT_ACCESS_SECRET
 
 const authSocket = (socket, next) => {
     const token = socket.handshake.auth.token

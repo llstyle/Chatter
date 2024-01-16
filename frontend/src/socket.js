@@ -9,12 +9,4 @@ export const state = reactive({
 
 const URL = import.meta.env.VITE_API_URL;
 
-export const socket = io(URL);
-
-socket.on("connect", () => {
-  state.connected = true;
-});
-
-socket.on("disconnect", () => {
-  state.connected = false;
-});
+export const socket = io(URL, {autoConnect: false});

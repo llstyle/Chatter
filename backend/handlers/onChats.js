@@ -61,6 +61,35 @@ const chatsHandlers = (socket) => {
                 message: message
             });
         }
+    }),
+    socket.on("chat:delete", async (chatId, callback) => {
+        try {
+            const chat = await Chat.findOne({users: socket.user.user_id, _id: chatId})
+
+            if(!chat) {
+                throw {message: "doesnt have permissions", code: 400}
+            }
+
+            await chat.deleteOne()
+
+            chat.users.forEach((user) => {
+                socket.to(user._id.toString()).emit("chat:delete", chat)
+            })
+
+            callback({
+                status: "OK",
+                chat
+            })
+        } catch(e) {
+            let message = "Any troubles on server"
+            if(e.code === 400) {
+                message = e.message
+            }
+            callback({
+                status: "NOK",
+                message: message
+            });
+        }
     })
 }
 

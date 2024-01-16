@@ -16,9 +16,10 @@ const registerData = reactive({
 const register = async () => {
   try {
     const response = await axios.post('/auth/register', registerData);
-    localStorage.setItem("token", response.data.token)
-    await router.push({name: "home"})
+    alert(response.data)
+    await router.push({name: "login"})
   } catch (error) {
+    alert(error.response.data.message)
     console.error('Registration failed:', error);
   }
 };
@@ -64,7 +65,7 @@ const register = async () => {
   }
   
   .auth-form {
-    background-color: #fff;
+    background-color: black;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -88,14 +89,16 @@ const register = async () => {
     padding: 8px;
     margin-bottom: 16px;
     border: 1px solid #ccc;
+    background-color: chartreuse;
+    color: black;
     border-radius: 4px;
   }
   
   .auth-form button {
     width: 100%;
     padding: 10px;
-    background-color: #3498db;
-    color: white;
+    background-color: chartreuse;
+    color: black;
     border: none;
     border-radius: 4px;
     cursor: pointer;

@@ -1,5 +1,5 @@
-import * as dotenv from 'dotenv'
-dotenv.config()
+import 'dotenv/config'
+
 
 import express from "express"
 import http from 'http'
@@ -8,12 +8,14 @@ import { Server } from 'socket.io'
 
 import mongoose from "mongoose";
 import router from "./routes/index.js";
+import error from './middlewares/error.js'
 
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
 import onConnection from './handlers/onConnection.js'
 import authSocket from './middlewares/authSocket.js'
+import helmet from 'helmet'
 
 const app = express();
 const server = http.createServer(app);
@@ -31,6 +33,8 @@ const corsOptions = {
     credentials:true,
     optionSuccessStatus:200
 }
+
+app.use(helmet())
 app.use(cors(corsOptions))
 
 app.use(cookieParser())
@@ -42,6 +46,7 @@ app.use(express.urlencoded({
 
 
 app.use("/", router)
+app.use(error)
 
 io.use(authSocket)
 

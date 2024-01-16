@@ -1,78 +1,71 @@
-import * as dotenv from 'dotenv'
-dotenv.config()
 import User from "../models/User.js";
-import jwt from "jsonwebtoken"
+import Activation from "../models/Activation.js";
+
+
+import userService from "../services/user-service.js";
+import tokenService from "../services/token-service.js";
+
 import bcrypt from "bcryptjs"
+import { v4 as uuidv4 } from 'uuid';
 
-const TOKEN = process.env.TOKEN
+import ApiError from "../exceptions/api-error.js";
+import { validationResult } from "express-validator";
+
 class UserController {
-     async register(req, res) {
+     async register(req, res, next) {
          try {
-             const {username, email, password, firstname, lastname } = req.body;
-
-             if (!(email && password && username)) {
-                 res.status(400).send("All input is required");
-             }
-             const oldUser = await User.findOne({ email });
-
-             if (oldUser) {
-                 return res.status(409).send("User Already Exist. Please Login");
-             }
-
-             const encryptedPassword = await bcrypt.hash(password, 10);
-
-             const user = await User.create({
-                 username: username,
-                 email: email.toLowerCase(),
-                 firstname: firstname,
-                 lastname: lastname,
-                 password: encryptedPassword,
-             });
-
-             const token = jwt.sign(
-                 {user_id: user._id, username: user.username, email},
-                 TOKEN,
-                 {
-                     expiresIn: "2h",
-                 }
-             );
-             res.status(201).json({ token });
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw ApiError.BadRequest("All inputs is required", errors.array())
+            }
+            await userService.registration(req.body)
+            return res.status(201).send("Seccessful sended email verification")
          } catch (err) {
-             console.log(err);
+             next(err)
          }
      }
-    async login(req, res) {
+    async login(req, res, next) {
         try {
-            const { email, password } = req.body;
-
-            if (!(email && password)) {
-                res.status(400).send("All input is required");
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw ApiError.BadRequest("All inputs is required", errors.array())
             }
-            const user = await User.findOne({ email });
+            const tokens = await userService.login(req.body)
 
-            if (user && (await bcrypt.compare(password, user.password))) {
-                const token = jwt.sign(
-                    { user_id: user._id, username: user.username, email },
-                    TOKEN,
-                    {
-                        expiresIn: "2h",
-                    }
-                );
-                res.status(200).json({token})
-            } else {
-                res.status(400).send("Invalid Credentials");
-            }
+            res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            return res.status(200).json(tokens)
         } catch (err) {
-            console.log(err);
+            next(err)
         }
     }
-    async search(req, res) {
+    async activation(req, res, next) {
+        try {
+            const {link} = req.params
+            await userService.activate(link)
+            return res.status(200).send("Seccessful activation, now you can login")
+        } catch(e) {
+            next(e)
+        }
+    }
+    async refresh(req, res, next) {
+        try {
+            const {refreshToken} = req.cookies;
+
+            const tokens = await userService.refresh(refreshToken)
+            res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            
+            return res.status(200).json(tokens)
+        } catch(e) {
+            next(e)
+        }
+    }
+    async search(req, res, next) {
         try {
             const {search} = req.query
             const users = await User.find({username: { "$regex": search, "$options": "i" }, _id: {$ne: req.user.user_id}}, "_id username firstname lastname").limit(10)
             res.status(200).json(users)
         } catch (err) {
-            console.log(err);
+            next(err)
         }
     }
     async getMe(req, res) {

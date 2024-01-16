@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user.store';
 
 const router = useRouter()
 
@@ -10,12 +11,17 @@ const loginData = reactive({
   password: '',
 });
 
+const userStore = useUserStore()
+
+
 const login = async () => {
   try {
-    const response = await axios.post('/auth/login', {email: loginData.email, password: loginData.password});
-    localStorage.setItem('token', response.data.token)
+    const response = await axios.post('/auth/login', {email: loginData.email, password: loginData.password}, { withCredentials: true });
+    userStore.user.token = response.data.accessToken
+    userStore.startRefreshTokenTimer()
     await router.push({ name: "home" })
   } catch (error) {
+    alert(error.response.data.message)
     console.error('Login failed:', error);
   }
 };
@@ -52,8 +58,8 @@ const login = async () => {
 }
 
 .auth-form {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: black;
+  border: 1px solid darkgrey;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -76,14 +82,16 @@ const login = async () => {
   padding: 8px;
   margin-bottom: 16px;
   border: 1px solid #ccc;
+  background-color: chartreuse;
+  color: black;
   border-radius: 4px;
 }
 
 .auth-form button {
   width: 100%;
   padding: 10px;
-  background-color: #3498db;
-  color: white;
+  background-color: chartreuse;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;

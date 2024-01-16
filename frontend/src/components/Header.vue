@@ -1,10 +1,10 @@
 <template>
     <header>
       <div class="logo">
-        <h1 @click="$router.push({name: 'home'})">Chatter</h1>
+        <h1 class="nav-item" @click="$router.push({name: 'home'})">Chatter</h1>
       </div>
       <div>
-        <h3 @click="$router.push({name: 'login'})">login</h3>
+        <h3 class="nav-item" @click="$router.push({name: 'login'})">login</h3>
       </div>
     </header>
   </template>
@@ -14,8 +14,8 @@
   
   <style scoped>
   header {
-    background-color: #3498db;
-    color: white;
+    background-color: chartreuse;
+    color: black;
     padding: 10px;
     text-align: center;
     display: flex;
@@ -36,6 +36,10 @@
     margin: 0;
     font-size: 1.5em;
     cursor: pointer;
+  }
+  .nav-item {
+    color: black;
+    background-color: chartreuse;
   }
   </style>
   

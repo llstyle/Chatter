@@ -3,7 +3,7 @@
       <div class="search-bar">
         <input v-model="searchQuery" type="text" placeholder="Search friends" />
       </div>
-        <div style="position: absolute;background-color: aliceblue;">
+        <div style="position: absolute;background-color: black;">
             <div style="padding: 8px;border: 1px gray solid; cursor: pointer;"  v-for="user in searchUsers" :key="user._id" @click="createChat(user)">
                 {{ user.username }}| {{ user.firstname }} {{ user.lastname }}
             </div>
@@ -17,6 +17,12 @@
             <div class="last-message">{{ chat?.message?.at(0)?.content }}</div>
           </div>
           <div v-if="chat?.message?.at(0)?.viewed?.indexOf(userId) === -1" class="notification"></div>
+          <div @click.stop="showOptions(chat._id)" class="dropdown-options" >
+            ⋮
+            <div  v-if="showOptionsId === chat._id" class="dropdown">
+              <button @click="deleteChat(chat._id)">Delete</button>
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -25,25 +31,32 @@
   <script setup>
   import { computed, ref, watch } from 'vue';
   import axios from 'axios';
+import { useUserStore } from '@/stores/user.store';
   
   const props = defineProps({
     chats: Array,
     selectedChat: String,
     userId: String
   })
-  const emit = defineEmits(['selectChat', 'createChat'])
+  const emit = defineEmits(['selectChat', 'createChat', 'deleteChat'])
 
   const searchUsers = ref([])
   
   const searchQuery = ref('');
 
-  const token = localStorage.getItem("token")
+  const userStore = useUserStore()
+
+  const showOptionsId = ref(null)
+
+  const showOptions = (chatId) => {
+    showOptionsId.value = showOptionsId.value === chatId ? null : chatId;
+  };
 
   const findUsers = async (val) => {
     try {
         const response = await axios.get(`/auth/search?search=${val}`, {
             headers: {
-                "Authorization": token
+                "Authorization": userStore.user.token
             }
         });
         searchUsers.value = response.data
@@ -55,7 +68,11 @@
     searchQuery.value = ""
     emit('createChat', user._id)
   }
-
+  const deleteChat = (chatId) => {
+    if(chatId) {
+      emit("deleteChat", chatId)
+    }
+  }
   watch(searchQuery, async (val) => {
     if(val) {
         findUsers(val)
@@ -69,7 +86,7 @@
   .sidebar {
     width: 300px;
     height: 100%;
-    background-color: #f4f4f4;
+    background-color: black;
     border-right: 1px solid #ddd;
     padding: 20px;
     box-sizing: border-box;
@@ -77,12 +94,14 @@
   
   .search-bar {
     margin-bottom: 10px;
+
   }
   
   .search-bar input {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ddd;
+    background-color: chartreuse;
+    color: black;
     border-radius: 4px;
   }
   
@@ -102,7 +121,8 @@
     font-size: 1em;
   }
   .selected {
-    background-color: #dcf8c6;
+    background-color: chartreuse;
+    color: black;
   }
 
 .friend-details {
@@ -124,5 +144,31 @@
   border-radius: 50%;
   margin-left: 10px;
 }
+
+.dropdown {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  .dropdown button {
+    padding: 5px;
+    background-color: chartreuse;
+    border: none;
+    cursor: pointer;
+  }
+  .dropdown-options {
+    cursor: pointer;
+    position: relative;
+    font-size: xx-large;
+    font-weight: bold;
+    justify-self: end;
+  }
   </style>
   
