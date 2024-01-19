@@ -26,7 +26,7 @@ class UserController {
             }
             const tokens = await userService.login(req.body)
 
-            res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
+            res.cookie('refreshToken', tokens.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'none', secure: true})
             return res.status(200).json(tokens)
         } catch (err) {
             next(err)
