@@ -1,12 +1,6 @@
 import User from "../models/User.js";
-import Activation from "../models/Activation.js";
-
 
 import userService from "../services/user-service.js";
-import tokenService from "../services/token-service.js";
-
-import bcrypt from "bcryptjs"
-import { v4 as uuidv4 } from 'uuid';
 
 import ApiError from "../exceptions/api-error.js";
 import { validationResult } from "express-validator";

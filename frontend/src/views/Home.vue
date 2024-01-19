@@ -25,7 +25,11 @@ const setLastMessage = (message) => {
 }
 
 onMounted(async () => {
-  await userStore.refreshToken()
+  try {
+    await userStore.refreshToken()
+  } catch (e) {
+    await router.push({name: 'login'})
+  }
 
   if(userStore.user.token) {
     socket.auth = { token: userStore.user.token }

@@ -12,13 +12,9 @@ export const useUserStore = defineStore('user', () => {
     const refreshTokenTimeout = ref(null)
 
     const refreshToken = async () => {
-        try {
-            const response = await axios.get(`/auth/refresh`, { withCredentials: true });
-            user.token = response.data.accessToken
-            startRefreshTokenTimer();
-        } catch(e) {
-            alert(e)
-        }
+        const response = await axios.get(`/auth/refresh`, { withCredentials: true });
+        user.token = response.data.accessToken
+        startRefreshTokenTimer();
     }
     const startRefreshTokenTimer = () => {
         const jwtBase64 = user.token.split('.')[1];

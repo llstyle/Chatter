@@ -40,6 +40,7 @@ const login = async () => {
       <input v-model="loginData.password" type="password" id="loginPassword" required />
 
       <button type="submit">Login</button>
+      <div class="register" @click="router.push({ name: 'register'})"> Doesnt have account</div>
     </form>
   </div>
 </template>
@@ -97,5 +98,13 @@ const login = async () => {
   cursor: pointer;
 }
 
+.register {
+  cursor: pointer;
+  text-align: center;
+  text-decoration:none;
+  font-size: x-small;
+  color: chartreuse;
+  padding: 8px;
+}
 </style>
 

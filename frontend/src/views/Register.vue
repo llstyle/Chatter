@@ -46,8 +46,8 @@ const register = async () => {
         <input v-model="registerData.lastname" type="text" id="lastname" />
   
         <button type="submit">Register</button>
+        <div class="login" @click="router.push({ name: 'login'})"> Already have account</div>
       </form>
-    
     </div>
   </template>
   
@@ -102,6 +102,15 @@ const register = async () => {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+  }
+
+  .login {
+    cursor: pointer;
+    text-align: center;
+    text-decoration:none;
+    font-size: x-small;
+    color: chartreuse;
+    padding: 8px;
   }
   
   </style>
