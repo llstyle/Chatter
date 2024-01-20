@@ -157,9 +157,10 @@ const deleteMessage = (mesId) => {
 
 <style scoped>
 .home-container {
+  flex: 1;
   display: flex;
-  width: 100%;
-  height: 100%;
+  min-height: 0;
+  min-width: 0;
 }
 
 </style>

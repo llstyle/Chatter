@@ -77,8 +77,9 @@
   .messages-container {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
   }
   
   .message-list {
@@ -150,6 +151,7 @@
     align-items: center;
     padding: 10px;
     border-top: 1px solid #ddd;
+    min-height: 0;
   }
   
   textarea {
