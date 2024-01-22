@@ -34,9 +34,6 @@ const corsOptions = {
     optionSuccessStatus:200
 }
 
-app.use(helmet())
-app.use(cors(corsOptions))
-
 app.use(cookieParser())
 
 app.use(express.json());
@@ -44,6 +41,8 @@ app.use(express.urlencoded({
     extended: true
 }));
 
+app.use(helmet())
+app.use(cors(corsOptions))
 
 app.use("/", router)
 app.use(error)
