@@ -22,10 +22,9 @@ export const useUserStore = defineStore('user', () => {
 
         const expires = new Date(jwtToken.exp * 1000);
         const timeout = expires.getTime() - Date.now() - (60 * 1000);
-
         user.username = jwtToken.username
         user.email = jwtToken.email
-        user.id = jwtToken._id
+        user.id = jwtToken.user_id
 
         refreshTokenTimeout.value = setTimeout(refreshToken, timeout);
     }

@@ -1,5 +1,7 @@
 <template>
-    <div class="messages-container" v-if="chat">
+
+    <div class="messages-container" v-if="chat._id">
+      <MessageHeader @back="emit('back')" :chat="chat" />
       <div class="message-list" ref="messageList">
         <div v-for="message in messages" :key="message._id" class="message" :class="{ 'sent': message.owner._id === user }">
           <div style="width: 100%;">
@@ -37,13 +39,14 @@
   
 <script setup>
   import { nextTick, ref, watch } from 'vue';
+import MessageHeader from './MessageHeader.vue';
 
   const props = defineProps({
     messages: Array,
     user: String,
-    chat: String
+    chat: Object
   })
-  const emit = defineEmits(['messageNew', 'messageDelete'])
+  const emit = defineEmits(['messageNew', 'messageDelete', 'back'])
 
   const messageList = ref()
   
@@ -55,7 +58,7 @@
     showOptionsId.value = showOptionsId.value === messageId ? null : messageId;
   };
   const sendMessage = () => {
-    if(props.user && props.chat) {
+    if(props.user && props.chat._id && content.value) {
         emit("messageNew", content.value)
         content.value = ""
     }

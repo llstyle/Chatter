@@ -3,25 +3,26 @@ import Messages from "@/components/Messages.vue";
 import SideBar from "@/components/SideBar.vue";
 import { socket } from "@/socket";
 import { useUserStore } from "@/stores/user.store";
+import { useChatStore } from "@/stores/chat.store";
 import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter()
 
 const userStore = useUserStore()
-
-const currUser = ref({})
-const chats = ref([])
-
-const selectedChat = ref("")
-const chatMessages = ref([])
+const chatStore = useChatStore()
 
 const setLastMessage = (message) => {
-  const chat = chats.value.find(c => c._id === (message.chat._id ?? message.chat))
+  const chat = chatStore.chats.find(c => c._id === (message.chat._id ?? message.chat))
 
   if (chat) {
     chat.message = [message]
   }
+}
+
+const back = async () => {
+  chatStore.chat = {}
+  chatStore.messages = []
 }
 
 onMounted(async () => {
@@ -30,7 +31,6 @@ onMounted(async () => {
   } catch (e) {
     await router.push({name: 'login'})
   }
-
   if(userStore.user.token) {
     socket.auth = { token: userStore.user.token }
     socket.connect()
@@ -48,30 +48,26 @@ onUnmounted(() => {
   socket.off("credentials");
 })
 
-socket.on("credentials", (user) => {
-  currUser.value = user
-})
-
 socket.on("chats", (chat) => {
   chat.forEach(c => {
-    c.users = c.users.filter(user => user._id !== currUser.value.user_id)
+    c.users = c.users.filter(user => user._id !== userStore.user.id)
   })
-  chats.value = chat
+  chatStore.chats = chat
 })
 socket.on("chat:new", (chat) => {
-  chat.users = chat.users.filter(user => user._id !== currUser.value.user_id)
-  chats.value.push(chat)
+  chat.users = chat.users.filter(user => user._id !== userStore.user.id)
+  chatStore.chats.push(chat)
 })
 socket.on("chat:delete", chat => {
-  if(chat._id === selectedChat.value) {
-    selectedChat.value = ""
-    chatMessages.value = []
+  if(chat._id === chatStore.chat._id) {
+    chatStore.chat = {}
+    chatStore.messages = []
   }
-  chats.value = chats.value.filter((chatFilter) => chatFilter._id !== chat._id)
+  chatStore.chats = chatStore.chats.filter((chatFilter) => chatFilter._id !== chat._id)
 })
 socket.on("message:new", (message) => {
-    if(message.chat._id === selectedChat.value) {
-      chatMessages.value.push(message)
+    if(message.chat._id === chatStore.chat._id) {
+      chatStore.messages.push(message)
 
       socket.emit("message:view", message._id, (response) => {
         if(response.status === "OK") {
@@ -85,9 +81,9 @@ socket.on("message:new", (message) => {
 })
 
 socket.on("message:delete", message => {
-  if(message.chat._id === selectedChat.value) {
-      chatMessages.value = chatMessages.value.filter((mes) => message._id !== mes._id)
-      setLastMessage(chatMessages.value.at(-1))
+  if(message.chat._id === chatStore.chat._id) {
+      chatStore.messages = chatStore.messages.filter((mes) => message._id !== mes._id)
+      setLastMessage(chatStore.messages.at(-1))
     }
 })
 
@@ -97,13 +93,13 @@ socket.on("connect_error", (err) => {
   }
 });
 
-const selectChat = (chatid) => {
-  socket.emit("messages:get", chatid, (response) => {
+const selectChat = (chatSelected) => {
+  socket.emit("messages:get", chatSelected._id, (response) => {
     if(response.status === "OK") {
-      selectedChat.value = chatid
-      chatMessages.value = response.messages
+      chatStore.chat = chatSelected
+      chatStore.messages = response.messages
 
-      const chat = chats.value.find(chat => chat._id === selectedChat.value)
+      const chat = chatStore.chats.find(chat => chat._id === chatStore.chat._id)
       if (chat) {
         chat.message = [response.messages.at(-1)]
       }
@@ -114,26 +110,26 @@ const selectChat = (chatid) => {
 const createChat = (user_id) => {
   socket.emit("chat:new", user_id, (response) => {
     if(response.status === "OK") {
-      response.chat.users = response.chat.users.filter(user => user._id !== currUser.value.user_id)
-      chats.value.push(response.chat)
+      response.chat.users = response.chat.users.filter(user => user._id !== userStore.user.id)
+      chatStore.chats.push(response.chat)
     }
   })
 }
 const deleteChat = (chat_id) => {
   socket.emit("chat:delete", chat_id, (response) => {
     if(response.status === "OK") {
-      if(response.chat._id === selectedChat.value) {
-        selectedChat.value = ""
-        chatMessages.value = []
+      if(response.chat._id === chatStore.chat._id) {
+        chatStore.chat = {}
+        chatStore.messages = []
       }
-      chats.value = chats.value.filter((chat) => chat._id !== response.chat._id)
+      chatStore.chats = chatStore.chats.filter((chat) => chat._id !== response.chat._id)
     }
   })
 }
 const createMessage = (content) => {
-  socket.emit("message:new", selectedChat.value, content, (response) => {
+  socket.emit("message:new", chatStore.chat._id, content, (response) => {
     if(response.status === "OK") {
-      chatMessages.value.push(response.message)
+      chatStore.messages.push(response.message)
       setLastMessage(response.message)
     }
   })
@@ -141,8 +137,8 @@ const createMessage = (content) => {
 const deleteMessage = (mesId) => {
   socket.emit("message:delete", mesId, (response) => {
     if(response.status === "OK") {
-      chatMessages.value = chatMessages.value.filter((message) => message._id !== response.message)
-      setLastMessage(chatMessages.value.at(-1))
+      chatStore.messages = chatStore.messages.filter((message) => message._id !== response.message)
+      setLastMessage(chatStore.messages.at(-1))
     }
   })
 }
@@ -150,8 +146,8 @@ const deleteMessage = (mesId) => {
 
 <template>
   <div class="home-container">
-    <SideBar :chats="chats" :selectedChat="selectedChat" :userId="currUser.user_id" @selectChat="selectChat" @createChat="createChat" @deleteChat="deleteChat"/>
-    <Messages :messages="chatMessages" :user="currUser.user_id" :chat="selectedChat" @messageNew="createMessage" @messageDelete="deleteMessage" />
+    <SideBar :class="chatStore.chat._id ? 'sbar': 'sbar-active'" :chats="chatStore.chatsFiltered" :selectedChat="chatStore.chat._id" :userId="userStore.user.id" @selectChat="selectChat" @createChat="createChat" @deleteChat="deleteChat"/>
+    <Messages :class="chatStore.chat._id ? 'messages-active': 'messages'" :messages="chatStore.messages" :user="userStore.user.id" :chat="chatStore.chat" @messageNew="createMessage" @messageDelete="deleteMessage" @back="back" />
   </div>
 </template>
 
@@ -163,4 +159,20 @@ const deleteMessage = (mesId) => {
   min-width: 0;
 }
 
+@media (max-width:960px) {
+  .sbar-active {
+    width: 100%;
+    display: block;
+  }
+  .messages {
+    display: none;
+  }
+  .sbar {
+    display: none;
+  }
+  .messages-active {
+    width: 100%;
+    display: flex;
+  }
+}
 </style>

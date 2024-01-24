@@ -1,5 +1,6 @@
 <template>
     <aside class="sidebar">
+      <Header style="margin-bottom: 1%;" />
       <div class="search-bar">
         <input v-model="searchQuery" type="text" placeholder="Search friends" />
       </div>
@@ -11,7 +12,7 @@
 
       
       <div class="friends-list">
-        <div v-for="chat in chats" :key="chat._id" :class="selectedChat === chat._id ? 'friend selected': 'friend'" @click="emit('selectChat', chat._id)">
+        <div v-for="chat in chats" :key="chat._id" :class="selectedChat === chat._id ? 'friend selected': 'friend'" @click="emit('selectChat', chat)">
           <div class="friend-details" >
             <span>{{ chat.users[0].firstname }} {{ chat.users[0].lastname }}</span>
             <div class="last-message">{{ chat?.message?.at(0)?.content }}</div>
@@ -32,6 +33,7 @@
   import { computed, ref, watch } from 'vue';
   import axios from 'axios';
 import { useUserStore } from '@/stores/user.store';
+import Header from './Header.vue';
   
   const props = defineProps({
     chats: Array,
@@ -88,7 +90,6 @@ import { useUserStore } from '@/stores/user.store';
     height: 100%;
     background-color: black;
     border-right: 1px solid #ddd;
-    padding: 20px;
     box-sizing: border-box;
   }
   

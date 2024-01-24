@@ -10,7 +10,6 @@ const userStore = useUserStore()
 
 <template>
   <div class="wrapper">
-    <Header />
     <RouterView style="flex-grow: 1;" />
   </div>
 </template>
