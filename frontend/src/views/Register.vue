@@ -31,13 +31,13 @@ const register = async () => {
         <h2>Create an account</h2>
   
         <label for="username">Username:</label>
-        <input v-model="registerData.username.trim" type="text" id="username" required />
+        <input v-model.trim="registerData.username" type="text" id="username" required />
   
         <label for="email">Email:</label>
-        <input v-model="registerData.email.trim" type="email" id="email" required />
+        <input v-model.trim="registerData.email" type="email" id="email" required />
   
         <label for="password">Password:</label>
-        <input v-model="registerData.password.trim" type="password" id="password" required />
+        <input v-model.trim="registerData.password" type="password" id="password" required />
 
         <label for="firstname">First Name:</label>
         <input v-model.trim="registerData.firstname" type="text" id="firstname" required/>
