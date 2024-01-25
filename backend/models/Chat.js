@@ -5,9 +5,9 @@ const Chat = new mongoose.Schema({
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 })
 
-Chat.pre('remove', function(next) {
-    Message.remove({chat: this._id}).exec();
-    next();
+Chat.pre('remove', async (next) => {
+    await Message.deleteMany({chat: this._id})
+    next()
 });
 
 export default mongoose.model('Chat', Chat)

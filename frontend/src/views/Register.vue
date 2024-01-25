@@ -31,19 +31,19 @@ const register = async () => {
         <h2>Create an account</h2>
   
         <label for="username">Username:</label>
-        <input v-model="registerData.username" type="text" id="username" required />
+        <input v-model="registerData.username.trim" type="text" id="username" required />
   
         <label for="email">Email:</label>
-        <input v-model="registerData.email" type="email" id="email" required />
+        <input v-model="registerData.email.trim" type="email" id="email" required />
   
         <label for="password">Password:</label>
-        <input v-model="registerData.password" type="password" id="password" required />
+        <input v-model="registerData.password.trim" type="password" id="password" required />
 
         <label for="firstname">First Name:</label>
-        <input v-model="registerData.firstname" type="text" id="firstname" required/>
+        <input v-model.trim="registerData.firstname" type="text" id="firstname" required/>
 
         <label for="lastname">Last Name:</label>
-        <input v-model="registerData.lastname" type="text" id="lastname" />
+        <input v-model.trim="registerData.lastname" type="text" id="lastname" />
   
         <button type="submit">Register</button>
         <div class="login" @click="router.push({ name: 'login'})"> Already have account</div>

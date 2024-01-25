@@ -1,6 +1,6 @@
 <template>
     <header>
-      <div class="logo">
+      <div>
         <p class="nav-item logo-item" @click="$router.push({name: 'home'})">Ch</p>
       </div>
       <div>
@@ -14,17 +14,13 @@
   
   <style scoped>
   header {
-    background-color: chartreuse;
-    color: black;
+    background-color: black;
+    color: chartreuse;
     padding: 10px;
     text-align: center;
     display: flex;
     justify-content: space-between;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
+    border-bottom: 1px solid #ddd;
   }
   
   img {
@@ -36,13 +32,12 @@
     cursor: pointer;
   }
   .nav-item {
-    color: black;
-    background-color: chartreuse;
-  }
-  .logo-item {
     background-color: black;
     color: chartreuse;
-    padding: 4px;
+    padding: 3px;
+  }
+  .logo-item {
+    border: 1px solid #ddd;
   }
   </style>
   

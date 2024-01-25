@@ -1,6 +1,6 @@
 <template>
     <header>
-        <div>
+      <div>
         <p class="nav-item back" @click="emit('back')"><span>&#8592;</span></p>
       </div>
       <div>
@@ -27,7 +27,7 @@
     text-align: center;
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid chartreuse;
+    border-bottom: 1px solid #ddd;
   }
   
   .logo {
