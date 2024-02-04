@@ -39,22 +39,20 @@ const messagesHandlers = async (socket) => {
             }
 
             if(replyMessage) {
-                const reply = await Message.findOne({_id: replyMessage, chat: chat._id})
-                if(!reply) {
+                replyMessage = await Message.findOne({_id: replyMessage, chat: chat._id})
+                if(!replyMessage) {
                     throw {message: "doesnt have permissions", code: 400}
                 }
-                replyMessage = reply._id
             }
 
             let message = await Message.create({
                 owner: socket.user.user_id,
+                chat: chat._id,
                 content,
-                chat,
                 replyMessage,
                 viewed: [socket.user.user_id]
             })
-            message = await message
-            .populate("owner replyMessage", "firstname lastname _id content")
+            message = await message.populate("owner", "firstname lastname")
 
             chat.users.forEach((user) => {
                 socket.to(user.toString()).emit("message:new", message)
@@ -65,7 +63,6 @@ const messagesHandlers = async (socket) => {
                 message
             });
         } catch(e) {
-            console.log(e)
             callback({
                 status: "NOK",
                 message: "Any troubles on server"
@@ -91,7 +88,6 @@ const messagesHandlers = async (socket) => {
                 message: message._id
             });
         } catch(e) {
-            console.log(e)
             callback({
                 status: "NOK",
                 message: "Any troubles on server"
