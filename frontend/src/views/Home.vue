@@ -133,7 +133,7 @@ const createMessage = (message) => {
   socket.emit("message:new", chatStore.chat._id, message.content, message.reply, (response) => {
     if(response.status === "OK") {
       chatStore.messages.push(response.message)
-      setLastMessage(response.message)
+      setLastMessage(response.message, response.message.chat)
     }
   })
 }
@@ -141,7 +141,7 @@ const deleteMessage = (mesId) => {
   socket.emit("message:delete", mesId, (response) => {
     if(response.status === "OK") {
       chatStore.messages = chatStore.messages.filter((message) => message._id !== response.message)
-      setLastMessage(chatStore.messages.at(-1))
+      setLastMessage(chatStore.messages.at(-1), response.message.chat)
     }
   })
 }
