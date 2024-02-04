@@ -52,7 +52,7 @@
   
 <script setup>
   import { nextTick, ref, watch } from 'vue';
-import MessageHeader from './MessageHeader.vue';
+  import MessageHeader from './MessageHeader.vue';
 
   const props = defineProps({
     messages: Array,

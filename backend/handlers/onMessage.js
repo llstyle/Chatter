@@ -38,6 +38,14 @@ const messagesHandlers = async (socket) => {
                 throw {message: "doesnt have permissions", code: 400}
             }
 
+            if(replyMessage) {
+                const reply = await Message.findOne({_id: replyMessage, chat: chat._id})
+                if(!reply) {
+                    throw {message: "doesnt have permissions", code: 400}
+                }
+                replyMessage = reply._id
+            }
+
             let message = await Message.create({
                 owner: socket.user.user_id,
                 content,

@@ -7,7 +7,7 @@ export const useChatStore = defineStore('chat', () => {
     const messages = ref([])
 
     const chatsFiltered = computed(() => {
-        chats.value.sort((a, b) => {
+        return [...chats.value].sort((a, b) => {
             if (a === null) {
                 return 1;
             }
@@ -16,7 +16,6 @@ export const useChatStore = defineStore('chat', () => {
             }
             return new Date(b.message?.at(0)?.createdAt) - new Date(a.message?.at(0)?.createdAt);
         })
-        return chats.value
     })
 
     return { chat, chats, messages, chatsFiltered  }
