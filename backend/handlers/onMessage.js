@@ -12,7 +12,9 @@ const messagesHandlers = async (socket) => {
 
             await Message.updateMany({ viewed: { "$ne": socket.user.user_id}, chat}, { $push: { viewed: socket.user.user_id } })
             
-            const messages = await Message.find({chat}).populate("owner", "firstname lastname")
+            const messages = await Message.find({chat})
+            .populate("owner", "firstname lastname")
+            .populate("replyMessage", "_id content")
 
             callback({
                 status: "OK",
@@ -29,7 +31,7 @@ const messagesHandlers = async (socket) => {
             });
         }
     })
-    socket.on("message:new", async (chatid, content, callback) => {
+    socket.on("message:new", async (chatid, content, replyMessage, callback) => {
         try {
             const chat = await Chat.findOne({_id: chatid, users: {"$in": [socket.user.user_id]}})
             if(!chat) {
@@ -40,9 +42,11 @@ const messagesHandlers = async (socket) => {
                 owner: socket.user.user_id,
                 content,
                 chat,
+                replyMessage,
                 viewed: [socket.user.user_id]
             })
-            message = await message.populate("owner", "firstname lastname")
+            message = await message
+            .populate("owner replyMessage", "firstname lastname _id content")
 
             chat.users.forEach((user) => {
                 socket.to(user.toString()).emit("message:new", message)
@@ -53,6 +57,7 @@ const messagesHandlers = async (socket) => {
                 message
             });
         } catch(e) {
+            console.log(e)
             callback({
                 status: "NOK",
                 message: "Any troubles on server"

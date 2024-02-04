@@ -12,8 +12,8 @@ const router = useRouter()
 const userStore = useUserStore()
 const chatStore = useChatStore()
 
-const setLastMessage = (message) => {
-  const chat = chatStore.chats.find(c => c._id === (message.chat._id ?? message.chat))
+const setLastMessage = (message, chatId) => {
+  const chat = chatStore.chats.find(c => c._id === chatId)
 
   if (chat) {
     chat.message = [message]
@@ -29,7 +29,10 @@ onMounted(async () => {
   try {
     await userStore.refreshToken()
   } catch (e) {
-    await router.push({name: 'login'})
+    if(e.response.status === 401) {
+      return await router.push({name: 'login'})
+    }
+    alert("Any problems on server")
   }
   if(userStore.user.token) {
     socket.auth = { token: userStore.user.token }
@@ -71,19 +74,19 @@ socket.on("message:new", (message) => {
 
       socket.emit("message:view", message._id, (response) => {
         if(response.status === "OK") {
-          setLastMessage(response.message)
+          setLastMessage(response.message, message.chat._id)
         }
       })
 
     } else {
-      setLastMessage(message)
+      setLastMessage(message, message.chat._id)
     }
 })
 
 socket.on("message:delete", message => {
   if(message.chat._id === chatStore.chat._id) {
       chatStore.messages = chatStore.messages.filter((mes) => message._id !== mes._id)
-      setLastMessage(chatStore.messages.at(-1))
+      setLastMessage(chatStore.messages.at(-1), message.chat)
     }
 })
 
@@ -126,8 +129,8 @@ const deleteChat = (chat_id) => {
     }
   })
 }
-const createMessage = (content) => {
-  socket.emit("message:new", chatStore.chat._id, content, (response) => {
+const createMessage = (message) => {
+  socket.emit("message:new", chatStore.chat._id, message.content, message.reply, (response) => {
     if(response.status === "OK") {
       chatStore.messages.push(response.message)
       setLastMessage(response.message)

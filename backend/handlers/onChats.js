@@ -81,6 +81,7 @@ const chatsHandlers = (socket) => {
                 chat
             })
         } catch(e) {
+            console.log(e)
             let message = "Any troubles on server"
             if(e.code === 400) {
                 message = e.message

@@ -1,22 +1,31 @@
 import User from "../models/User.js";
+import mongoose from "mongoose";
 
 import userService from "../services/user-service.js";
 
 import ApiError from "../exceptions/api-error.js";
 import { validationResult } from "express-validator";
 
+
 class UserController {
      async register(req, res, next) {
+        const session = await mongoose.startSession()
          try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 throw ApiError.BadRequest("All inputs is required", errors.array())
             }
+            session.startTransaction()
+
             await userService.registration(req.body)
+
+            await session.commitTransaction()
             return res.status(201).send("Seccessful sended email verification")
          } catch (err) {
+             await session.abortTransaction()
              next(err)
          }
+         session.endSession()
      }
     async login(req, res, next) {
         try {

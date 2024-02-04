@@ -7,9 +7,10 @@ import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from 'uuid';
 
 import ApiError from "../exceptions/api-error.js";
+import mongoose from "mongoose";
 
 class UserService {
-    async registration(body) {
+    async registration(body, session) {
         const {username, email, password, firstname, lastname } = body;
 
         const oldUser = await User.findOne({ email });
@@ -17,7 +18,6 @@ class UserService {
         if (oldUser) {
            throw ApiError.BadRequest("User Already Exist")
         }
-
         const encryptedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
