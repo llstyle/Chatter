@@ -9,7 +9,7 @@ export const useChatStore = defineStore('chat', () => {
     const chatsFiltered = computed(() => {
         return [...chats.value].sort((a, b) => {
             if (a.message?.at(0)?.createdAt === null) {
-                return 1;
+                return -1;
             }
             if (b.message?.at(0)?.createdAt === null) {
               return -1;
