@@ -47,7 +47,7 @@ const messagesHandlers = async (socket) => {
 
             let message = await Message.create({
                 owner: socket.user.user_id,
-                chat: chat._id,
+                chat,
                 content,
                 replyMessage,
                 viewed: [socket.user.user_id]
