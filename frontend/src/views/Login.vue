@@ -34,10 +34,10 @@ const login = async () => {
       <h2>Login to your account</h2>
 
       <label for="loginemail">Email:</label>
-      <input v-model="loginData.email" type="text" id="loginemail" required />
+      <input v-model.trim="loginData.email" type="text" id="loginemail" required />
 
       <label for="loginPassword">Password:</label>
-      <input v-model="loginData.password" type="password" id="loginPassword" required />
+      <input v-model.trim="loginData.password" type="password" id="loginPassword" required />
 
       <button type="submit">Login</button>
       <div class="register" @click="router.push({ name: 'register'})"> Doesnt have account</div>
