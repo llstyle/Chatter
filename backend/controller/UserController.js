@@ -65,7 +65,7 @@ class UserController {
     async search(req, res, next) {
         try {
             const {search} = req.query
-            const users = await User.find({username: { "$regex": search, "$options": "i" }, _id: {$ne: req.user.user_id}}, "_id username firstname lastname").limit(10)
+            const users = await User.find({username: { "$regex": search, "$options": "i" }, _id: {$ne: req.user.user_id}, verified: true}, "_id username firstname lastname").limit(10)
             res.status(200).json(users)
         } catch (err) {
             next(err)
