@@ -165,7 +165,7 @@ const deleteMessage = (mesId) => {
 @media (max-width:960px) {
   .sbar-active {
     width: 100%;
-    display: block;
+    display: flex;
   }
   .messages {
     display: none;

@@ -1,15 +1,16 @@
 <template>
     <aside class="sidebar">
-      <Header style="margin-bottom: 1%;" />
-      <div class="search-bar">
-        <input v-model="searchQuery" type="text" placeholder="Search friends" />
-      </div>
-        <div style="position: absolute;background-color: black;">
-            <div style="padding: 8px;border: 1px gray solid; cursor: pointer;"  v-for="user in searchUsers" :key="user._id" @click="createChat(user)">
-                {{ user.username }}| {{ user.firstname }} {{ user.lastname }}
-            </div>
+      <div class="optional">
+        <Header style="margin-bottom: 1%;" />
+        <div class="search-bar">
+          <input v-model="searchQuery" type="text" placeholder="Search friends" />
         </div>
-
+          <div style="position: absolute;background-color: black;">
+              <div style="padding: 8px;border: 1px gray solid; cursor: pointer;"  v-for="user in searchUsers" :key="user._id" @click="createChat(user)">
+                  {{ user.username }}| {{ user.firstname }} {{ user.lastname }}
+              </div>
+          </div>
+      </div>
       
       <div class="friends-list">
         <div v-for="chat in chats" :key="chat._id" :class="selectedChat === chat._id ? 'friend selected': 'friend'" @click="emit('selectChat', chat)">
@@ -91,11 +92,14 @@ import Header from './Header.vue';
     background-color: black;
     border-right: 1px solid #ddd;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
   }
   
   .search-bar {
     margin-bottom: 10px;
-
   }
   
   .search-bar input {
@@ -108,7 +112,7 @@ import Header from './Header.vue';
   
   .friends-list {
     overflow-y: auto;
-    max-height: calc(100% - 50px);
+    flex: 1;
   }
   
   .friend {

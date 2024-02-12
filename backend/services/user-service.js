@@ -7,7 +7,6 @@ import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from 'uuid';
 
 import ApiError from "../exceptions/api-error.js";
-import mongoose from "mongoose";
 
 class UserService {
     async registration(body, session) {
