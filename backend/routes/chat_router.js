@@ -4,4 +4,5 @@ const router = express.Router();
 import auth from "../middlewares/auth.js"
 
 router.post('/create', auth, ChatController.createChat);
+router.get('/all', auth, ChatController.get_All);
 export default router

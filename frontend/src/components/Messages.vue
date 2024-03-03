@@ -19,7 +19,6 @@
                 </div>
               </div>
             </div>
-
             <div @click="showOptions(message._id)" class="dropdown-options">
               ⋮
               <div v-if="showOptionsId === message._id" class="dropdown">
@@ -38,8 +37,8 @@
           <div class="reply-undo" @click="unReplyMessage">&#10006;</div>
         </div>
         <div class="message-input">
-          <textarea v-model="content" required placeholder="Type a message"></textarea>
-          <button @click="sendMessage">Send</button>
+          <textarea v-model="content" required placeholder="Type a message" @keydown.enter.exact.prevent="sendMessage"></textarea>
+          <button @click.prevent="sendMessage" style="background-color: black;color: chartreuse;font-size: x-large;">&#8680;</button>
         </div>  
       </div>
     </div>
@@ -117,6 +116,7 @@
   .message-main {
     max-width: 70%;
     margin: 10px;
+    
   }
   .message {
     padding: 10px;

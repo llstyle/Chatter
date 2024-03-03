@@ -49,5 +49,16 @@ class ChatController {
             res.status(500).send("Any troubles on server")
         }
     }
+    async get_All(req, res) {
+        try {
+            const chats = await Chat.find({}).populate({ path:"mess", match: { "users": {"$ne": req.user.user_id  } } }) 
+            res.status(200).send(chats)
+            return;
+
+        } catch (e) {
+            console.log(e)
+            res.status(500).send("Any troubles on server")
+        }
+    }
 }
 export default new ChatController()

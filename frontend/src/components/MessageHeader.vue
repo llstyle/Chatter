@@ -4,7 +4,11 @@
         <p class="nav-item back" @click="emit('back')"><span>&#8592;</span></p>
       </div>
       <div>
-        <p class="nav-item logo-item">{{ chatStore.chat.users[0].firstname }} {{ chatStore.chat.users[0].lastname }}</p>
+        <p class="nav-item logo-item">
+          <span >{{ chatStore.chat.name.at(0).firstname }} {{ chatStore.chat.name.at(0).lastname }}</span> 
+          <span v-if="chatStore.chat.name.at(0).online">(online)</span>
+          <span v-else>(offline)</span>
+        </p>
       </div>
 
     </header>

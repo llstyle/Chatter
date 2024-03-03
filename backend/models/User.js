@@ -10,9 +10,16 @@ const User = new mongoose.Schema({
     role: {
       type: String,
       enum: ['user', 'admin'],
-      default: 'user',
       required: true,
-    }
+    },
+    online: { type: Boolean, default: false}
+}, {
+  toJSON: {
+    virtuals: true
+  },
+  toObject: {
+      virtuals: true
+  }
 })
 
 export default mongoose.model('User', User)

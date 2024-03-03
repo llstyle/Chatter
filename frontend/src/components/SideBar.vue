@@ -15,15 +15,20 @@
       <div class="friends-list">
         <div v-for="chat in chats" :key="chat._id" :class="selectedChat === chat._id ? 'friend selected': 'friend'" @click="emit('selectChat', chat)">
           <div class="friend-details" >
-            <span>{{ chat.users[0].firstname }} {{ chat.users[0].lastname }}</span>
-            <div class="last-message">{{ chat?.message?.at(0)?.content }}</div>
-          </div>
-          <div v-if="chat?.message?.at(0)?.viewed?.indexOf(userId) === -1" class="notification"></div>
-          <div @click.stop="showOptions(chat._id)" class="dropdown-options" >
-            ⋮
-            <div  v-if="showOptionsId === chat._id" class="dropdown">
-              <button @click="deleteChat(chat._id)">Delete</button>
+            <span>{{ chat.name.at(0).firstname }} {{ chat.name.at(0).lastname }}</span>
+            <div style="display: flex;">
+              <div v-if="chat.name.at(0).online" class="online"></div>
+              <div class="last-message">{{ chat.last?.content }}</div>
             </div>
+          </div>
+          <div style="display: flex;position: relative;">
+            <div v-if="chat.unviewed > 0" class="notification">{{ chat.unviewed }}</div>
+              <div @click.stop="showOptions(chat._id)" class="dropdown-options" >
+                ⋮
+                <div  v-if="showOptionsId === chat._id" class="dropdown">
+                  <button @click="deleteChat(chat._id)">Delete</button>
+                </div>
+              </div>
           </div>
         </div>
       </div>
@@ -116,6 +121,7 @@ import Header from './Header.vue';
   }
   
   .friend {
+    position: relative;
     display: flex;
     align-items: center;
     padding: 10px;
@@ -132,6 +138,7 @@ import Header from './Header.vue';
 
 .friend-details {
   flex-grow: 1;
+  position: relative;
 }
 
 .last-message {
@@ -140,15 +147,15 @@ import Header from './Header.vue';
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 200px;
+  width: 100px;
 }
 
 .notification {
-  width: 10px;
-  height: 10px;
-  background-color: red;
-  border-radius: 50%;
-  margin-left: 10px;
+  font-size: small;
+  color: red;  
+  padding: 2px;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .dropdown {
@@ -175,6 +182,14 @@ import Header from './Header.vue';
     font-size: xx-large;
     font-weight: bold;
     justify-self: end;
+  }
+  .online {
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    margin-right: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
   }
   </style>
   

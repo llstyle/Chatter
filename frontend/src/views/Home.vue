@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/user.store";
 import { useChatStore } from "@/stores/chat.store";
 import { onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import  useOnline from "@/composables/online/useOnline.js"
 
 const router = useRouter()
 
@@ -14,10 +15,10 @@ const chatStore = useChatStore()
 
 const setLastMessage = (message, chatId) => {
   const chat = chatStore.chats.find(c => c._id === chatId)
-
   if (chat) {
-    chat.message = [message]
+    chat.last = message
   }
+  return chat
 }
 
 const back = async () => {
@@ -49,17 +50,21 @@ onUnmounted(() => {
   socket.off("message:new");
   socket.off("connect_error");
   socket.off("credentials");
+  socket.off("user:connected");
+  socket.off("user:disconnect")
 })
 
-socket.on("chats", (chat) => {
-  chat.forEach(c => {
-    c.users = c.users.filter(user => user._id !== userStore.user.id)
-  })
-  chatStore.chats = chat
+useOnline(socket)
+
+socket.on("chats", (chats) => {
+  chatStore.chats = chats
 })
 socket.on("chat:new", (chat) => {
-  chat.users = chat.users.filter(user => user._id !== userStore.user.id)
-  chatStore.chats.push(chat)
+  socket.emit("chat:get", chat, (response) => {
+    if(response.status === "OK") {
+      chatStore.chats.push(response.chat)
+    }
+  })
 })
 socket.on("chat:delete", chat => {
   if(chat._id === chatStore.chat._id) {
@@ -69,25 +74,25 @@ socket.on("chat:delete", chat => {
   chatStore.chats = chatStore.chats.filter((chatFilter) => chatFilter._id !== chat._id)
 })
 socket.on("message:new", (message) => {
+    const chat = setLastMessage(message, message.chat._id)
     if(message.chat._id === chatStore.chat._id) {
       chatStore.messages.push(message)
 
       socket.emit("message:view", message._id, (response) => {
-        if(response.status === "OK") {
-          setLastMessage(response.message, message.chat._id)
+        if(response.status === "NOK") {
+          alert("Any troubles when sending message")
         }
       })
-
     } else {
-      setLastMessage(message, message.chat._id)
+      chat.unviewed++
     }
 })
 
 socket.on("message:delete", message => {
-  if(message.chat._id === chatStore.chat._id) {
+  if(message.chat === chatStore.chat._id) {
       chatStore.messages = chatStore.messages.filter((mes) => message._id !== mes._id)
-      setLastMessage(chatStore.messages.at(-1), message.chat)
     }
+    setLastMessage(chatStore.messages.at(-1), message.chat)
 })
 
 socket.on("connect_error", (err) => {
@@ -103,10 +108,7 @@ const selectChat = (chatSelected) => {
       chatStore.messages = response.messages
 
       const chat = chatStore.chats.find(chat => chat._id === chatStore.chat._id)
-      if (chat) {
-        chat.message = [response.messages.at(-1)]
-      }
-      
+      chat.unviewed = 0
     }
   })
 }

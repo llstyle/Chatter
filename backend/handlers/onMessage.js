@@ -53,10 +53,8 @@ const messagesHandlers = async (socket) => {
                 viewed: [socket.user.user_id]
             })
             message = await message.populate("owner", "firstname lastname")
-
-            chat.users.forEach((user) => {
-                socket.to(user.toString()).emit("message:new", message)
-            })
+            
+            socket.to(message.chat.id.toString()).emit("message:new", message)
 
             callback({
                 status: "OK",
@@ -71,7 +69,7 @@ const messagesHandlers = async (socket) => {
     }),
     socket.on("message:delete", async (messageId, callback) => {
         try {
-            const message = await Message.findOne({_id: messageId, owner: socket.user.user_id}).populate("chat", "users")
+            const message = await Message.findOne({_id: messageId, owner: socket.user.user_id})
 
             if(!message) {
                 throw {message: "doesnt have permissions", code: 400}
@@ -79,9 +77,7 @@ const messagesHandlers = async (socket) => {
 
             await message.deleteOne()
 
-            message.chat.users.forEach((user) => {
-                socket.to(user.toString()).emit("message:delete", message)
-            })
+            socket.to(message.chat.toString()).emit("message:delete", message)
 
             callback({
                 status: "OK",

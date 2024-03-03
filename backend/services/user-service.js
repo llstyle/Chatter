@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ApiError from "../exceptions/api-error.js";
 
 class UserService {
-    async registration(body, session) {
+    async registration(body) {
         const {username, email, password, firstname, lastname } = body;
 
         const oldUser = await User.findOne({ email });
