@@ -3,9 +3,9 @@
       <div class="optional">
         <Header style="margin-bottom: 1%;" />
         <div class="search-bar">
-          <input v-model="searchQuery" type="text" placeholder="Search friends" />
+          <input v-model.trim="searchQuery" type="text" placeholder="Search friends" />
         </div>
-          <div style="position: absolute;background-color: black;">
+          <div style="position: absolute;background-color: black;z-index: 9999;">
               <div style="padding: 8px;border: 1px gray solid; cursor: pointer;"  v-for="user in searchUsers" :key="user._id" @click="createChat(user)">
                   {{ user.username }}| {{ user.firstname }} {{ user.lastname }}
               </div>
