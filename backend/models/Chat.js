@@ -12,6 +12,11 @@ Chat.pre('deleteOne', { document: true, query: false }, async function(next) {
     await Message.deleteMany({chat: this._id})
     next()
 });
+Chat.virtual('name', {
+    ref: "User",
+    localField: "users",
+    foreignField: "_id"
+})
 Chat.virtual('unviewed', {
     ref: "Message",
     localField: "_id",
