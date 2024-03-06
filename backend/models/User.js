@@ -11,6 +11,7 @@ const User = new mongoose.Schema({
       type: String,
       enum: ['user', 'admin'],
       required: true,
+      default: 'user'
     },
     online: { type: Boolean, default: false}
 }, {
