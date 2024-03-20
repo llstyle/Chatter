@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const TokenSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     refreshToken: {type: String, required: true},
-    deviceToken: {type: String, required: false}
 })
 
 export default mongoose.model('Token', TokenSchema);

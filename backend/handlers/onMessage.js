@@ -2,6 +2,7 @@ import Message from "../models/Message.js"
 import Chat from "../models/Chat.js"
 import Token from "../models/Token.js"
 import { sendMessage } from "../services/notification-service.js"
+import DeviceToken from "../models/DeviceToken.js"
 const messagesHandlers = async (socket) => {
 
     socket.on("messages:get", async (chatid, callback) => {
@@ -56,7 +57,7 @@ const messagesHandlers = async (socket) => {
             message = await message.populate("owner", "firstname lastname")
             socket.to(message.chat.id.toString()).emit("message:new", message)
 
-            const tokens = await Token.find({user: chat.users, user: {$ne: socket.user.user_id} }, "deviceToken").distinct('deviceToken')
+            const tokens = await DeviceToken.find({ $and: [{user: chat.users}, {user: {$ne: socket.user.user_id}}] }, "deviceToken").distinct('deviceToken')
             sendMessage(message, tokens)
 
             callback({

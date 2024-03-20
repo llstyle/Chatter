@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from 'uuid';
 
 import ApiError from "../exceptions/api-error.js";
+import deviceService from "./device-service.js";
 
 class UserService {
     async registration(body) {
@@ -56,8 +57,8 @@ class UserService {
         }
 
         const tokens = tokenService.generateTokens({user_id: user._id, username: user.username, email: user.email});
-        
-        await tokenService.saveToken(user._id, tokens.refreshToken, deviceToken);
+        await deviceService.saveToken(user._id, deviceToken)
+        await tokenService.saveToken(user._id, tokens.refreshToken);
 
         return tokens
     }
