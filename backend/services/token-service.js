@@ -37,7 +37,7 @@ class TokenService {
             if(deviceToken) {
                 tokenData.deviceToken = deviceToken
             }
-            return tokenData.save();
+            return await tokenData.save();
         }
         const token = await Token.create({user: userId, refreshToken: refreshToken, deviceToken: deviceToken})
         return token

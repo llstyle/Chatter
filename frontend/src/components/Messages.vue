@@ -47,7 +47,7 @@
 </template>
   
 <script setup>
-  import { nextTick, ref, watch } from 'vue';
+  import { nextTick, onMounted, ref, watch } from 'vue';
   import MessageHeader from './MessageHeader.vue';
   import markdownit from 'markdown-it'
 
@@ -92,6 +92,11 @@
     await nextTick()
     document.getElementById(id).scrollIntoView()
   }
+  onMounted(async () => {
+    if (props.chat.id) {
+      messageList.value.scrollTop = messageList.value.scrollHeight
+    }
+  })
   watch(() => props.messages, async () => {
     if(props.messages.length > 0) {
       await nextTick()
