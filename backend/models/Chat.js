@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import Message from './Message.js';
 
 const Chat = new mongoose.Schema({
-    type: {type: String, enum: ['chat', 'group'], required: true},
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 },{
     toJSON: { virtuals: true },

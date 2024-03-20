@@ -47,7 +47,7 @@ class UserService {
     }
 
     async login(body) {
-        const { email, password } = body;
+        const { email, password, deviceToken } = body;
 
         const user = await User.findOne({ email, verified: true });
 
@@ -56,7 +56,8 @@ class UserService {
         }
 
         const tokens = tokenService.generateTokens({user_id: user._id, username: user.username, email: user.email});
-        await tokenService.saveToken(user._id, tokens.refreshToken);
+        
+        await tokenService.saveToken(user._id, tokens.refreshToken, deviceToken);
 
         return tokens
     }

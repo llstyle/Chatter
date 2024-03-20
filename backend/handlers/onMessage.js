@@ -1,6 +1,7 @@
 import Message from "../models/Message.js"
 import Chat from "../models/Chat.js"
-
+import Token from "../models/Token.js"
+import { sendMessage } from "../services/notification-service.js"
 const messagesHandlers = async (socket) => {
 
     socket.on("messages:get", async (chatid, callback) => {
@@ -53,8 +54,10 @@ const messagesHandlers = async (socket) => {
                 viewed: [socket.user.user_id]
             })
             message = await message.populate("owner", "firstname lastname")
-            
             socket.to(message.chat.id.toString()).emit("message:new", message)
+
+            const tokens = await Token.find({user: chat.users, user: {$ne: socket.user.user_id} }, "deviceToken").distinct('deviceToken')
+            sendMessage(message, tokens)
 
             callback({
                 status: "OK",
@@ -77,7 +80,9 @@ const messagesHandlers = async (socket) => {
 
             await message.deleteOne()
 
-            socket.to(message.chat.toString()).emit("message:delete", message)
+            const last = await Message.findOne({chat: message.chat}, {}, { sort: {createdAt: -1} })
+
+            socket.to(message.chat.toString()).emit("message:delete", {last, message})
 
             callback({
                 status: "OK",

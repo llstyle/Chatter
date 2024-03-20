@@ -5,7 +5,7 @@
         <div class="search-bar">
           <input v-model.trim="searchQuery" type="text" placeholder="Search friends" />
         </div>
-          <div style="position: absolute;background-color: black;z-index: 9999;">
+          <div class="search-friends">
               <div style="padding: 8px;border: 1px gray solid; cursor: pointer;"  v-for="user in searchUsers" :key="user._id" @click="createChat(user)">
                   {{ user.username }}| {{ user.firstname }} {{ user.lastname }}
               </div>
@@ -38,8 +38,8 @@
   <script setup>
   import { computed, ref, watch } from 'vue';
   import axios from 'axios';
-import { useUserStore } from '@/stores/user.store';
-import Header from './Header.vue';
+  import { useUserStore } from '@/stores/user.store';
+  import Header from './Header.vue';
   
   const props = defineProps({
     chats: Array,
@@ -90,106 +90,5 @@ import Header from './Header.vue';
   })
   </script>
   
-  <style scoped>
-  .sidebar {
-    width: 300px;
-    height: 100%;
-    background-color: black;
-    border-right: 1px solid #ddd;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    min-height: 0;
-  }
-  
-  .search-bar {
-    margin-bottom: 10px;
-  }
-  
-  .search-bar input {
-    width: 100%;
-    padding: 8px;
-    background-color: chartreuse;
-    color: black;
-    border-radius: 4px;
-  }
-  
-  .friends-list {
-    overflow-y: auto;
-    flex: 1;
-  }
-  
-  .friend {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-  }
-  .friend span {
-    font-size: 1em;
-  }
-  .selected {
-    background-color: chartreuse;
-    color: black;
-  }
-
-.friend-details {
-  flex-grow: 1;
-  position: relative;
-}
-
-.last-message {
-  color: #888;
-  font-size: 0.8em;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 100px;
-}
-
-.notification {
-  font-size: small;
-  color: red;  
-  padding: 2px;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-.dropdown {
-    position: absolute;
-    top: 20px;
-    right: 0;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    z-index: 1;
-  }
-
-  .dropdown button {
-    padding: 5px;
-    background-color: chartreuse;
-    border: none;
-    cursor: pointer;
-  }
-  .dropdown-options {
-    cursor: pointer;
-    position: relative;
-    font-size: xx-large;
-    font-weight: bold;
-    justify-self: end;
-  }
-  .online {
-    width: 8px;
-    height: 8px;
-    background-color: red;
-    margin-right: 5px;
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-  </style>
+  <style scoped lang="css" src="@/assets/styles/sidebar.css"></style>
   

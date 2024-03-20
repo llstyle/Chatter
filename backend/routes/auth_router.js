@@ -18,6 +18,6 @@ router.get('/refresh', UserController.refresh);
 
 router.get('/search', auth, UserController.search);
 
-router.get('/get_me', auth, UserController.getMe)
+router.get('/get_me', UserController.getMe)
 
 export default router

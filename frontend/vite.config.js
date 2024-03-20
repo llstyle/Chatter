@@ -9,14 +9,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [vue(), VitePWA({
     registerType: 'autoUpdate',
+    injectRegister: 'auto',
     workbox: {
-      cleanupOutdatedCaches: false,
+      cleanupOutdatedCaches: true,
       globPatterns: ['**/*.{js,css,html,ico,png,svg,ttf}']
     },
     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
     manifest: {
       name: 'Chatter',
-      short_name: 'Ch',
+      short_name: 'Chatter',
       description: 'Just chatter',
       theme_color: 'black',
       background_color: 'black',

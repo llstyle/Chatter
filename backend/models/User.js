@@ -22,5 +22,11 @@ const User = new mongoose.Schema({
       virtuals: true
   }
 })
-
+User.virtual('token', {
+  ref: "Token",
+  localField: "_id",
+  foreignField: "user",
+  justOne: true,
+  options: {select: "deviceToken"}
+})
 export default mongoose.model('User', User)

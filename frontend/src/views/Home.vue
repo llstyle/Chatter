@@ -88,11 +88,15 @@ socket.on("message:new", (message) => {
     }
 })
 
-socket.on("message:delete", message => {
-  if(message.chat === chatStore.chat._id) {
-      chatStore.messages = chatStore.messages.filter((mes) => message._id !== mes._id)
+socket.on("message:delete", deleted => {
+    if(deleted.message.chat === chatStore.chat._id) {
+      chatStore.messages = chatStore.messages.filter((mes) => deleted.message._id !== mes._id)
     }
-    setLastMessage(chatStore.messages.at(-1), message.chat)
+    const chat = setLastMessage(deleted.last, deleted.last.chat)
+
+    if (deleted.message.viewed.indexOf(userStore.user.id) === -1) {
+      chat.unviewed--
+    }
 })
 
 socket.on("connect_error", (err) => {

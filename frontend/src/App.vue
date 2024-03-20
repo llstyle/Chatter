@@ -1,15 +1,22 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import Header from './components/Header.vue';
 import {useUserStore} from '@/stores/user.store.js'
+import { ref } from 'vue';
 import "@/assets/fonts/font.css"
 
-const userStore = useUserStore()
+const visible = ref(true)
 
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    visible.value = true
+  } else {
+    visible.value = false
+  }
+});
 </script>
 
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="visible">
     <RouterView style="flex-grow: 1;" />
   </div>
 </template>
@@ -36,4 +43,8 @@ body, html, #app {
 ::placeholder {
   color: black;
 }
+img {
+  max-width: 100%;
+}
+
 </style>

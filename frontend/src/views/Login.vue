@@ -3,7 +3,9 @@ import { reactive } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user.store';
+import useNotification from '@/composables/notification/useNotification.js'
 
+const { getDevice } = useNotification()
 const router = useRouter()
 
 const loginData = reactive({
@@ -16,7 +18,9 @@ const userStore = useUserStore()
 
 const login = async () => {
   try {
-    const response = await axios.post('/auth/login', {email: loginData.email, password: loginData.password}, { withCredentials: true });
+    const deviceToken = await getDevice()
+    console.log(deviceToken)
+    const response = await axios.post('/auth/login', {email: loginData.email, password: loginData.password, deviceToken}, { withCredentials: true });
     userStore.user.token = response.data.accessToken
     userStore.startRefreshTokenTimer()
     await router.push({ name: "home" })

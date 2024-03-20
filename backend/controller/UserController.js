@@ -72,7 +72,7 @@ class UserController {
         }
     }
     async getMe(req, res) {
-         res.status(200).json(req.user.username)
+         res.status(200).json(req.headers["user-agent"])
     }
  }
  export default new UserController()
