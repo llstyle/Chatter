@@ -120,8 +120,10 @@ const selectChat = (chatSelected) => {
 const getMessages = (page) => {
   socket.emit("messages:get", chatStore.chat._id, (chatStore.messagePage + 1), (response) => {
     if(response.status === "OK") {
-      chatStore.messages.push(...response.messages)
-      chatStore.messagePage++
+      if(response.messages.length > 0) {
+        chatStore.messages.push(...response.messages)
+        chatStore.messagePage++
+      }
     }
   })
 }
