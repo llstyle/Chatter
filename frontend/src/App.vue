@@ -1,6 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import {useUserStore} from '@/stores/user.store.js'
+import { RouterView } from 'vue-router'
 import { ref } from 'vue';
 import "@/assets/fonts/font.css"
 

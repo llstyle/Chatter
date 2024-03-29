@@ -22,6 +22,7 @@ class MessagesService {
         
         const messages = await Message.find({chat})
         .limit(limit).skip(((page - 1) * limit))
+        .sort({ createdAt: -1 })
         .populate("owner", "firstname lastname")
         .populate("replyMessage", "_id content")
 

@@ -12,6 +12,7 @@ const router = useRouter()
 
 const userStore = useUserStore()
 const chatStore = useChatStore()
+const messagesComponent = ref(null)
 
 const setLastMessage = (message, chatId) => {
   const chat = chatStore.chats.find(c => c._id === chatId)
@@ -77,7 +78,7 @@ socket.on("message:new", (message) => {
     const chat = setLastMessage(message, message.chat._id)
     if(message.chat._id === chatStore.chat._id) {
       chatStore.messages.push(message)
-
+      messagesComponent.value.goDown()
       socket.emit("message:view", message._id, (response) => {
         if(response.status === "NOK") {
           alert("Any troubles when sending message")
@@ -106,12 +107,12 @@ socket.on("connect_error", (err) => {
 });
 
 const selectChat = (chatSelected) => {
+  chatStore.messagePage = 1
   socket.emit("messages:get", chatSelected._id, chatStore.messagePage, (response) => {
     if(response.status === "OK") {
       chatStore.chat = chatSelected
       chatStore.messages = response.messages
-      chatStore.messagePage = 1
-
+      messagesComponent.value.goDown()
       const chat = chatStore.chats.find(chat => chat._id === chatStore.chat._id)
       chat.unviewed = 0
     }
@@ -121,7 +122,7 @@ const getMessages = (page) => {
   socket.emit("messages:get", chatStore.chat._id, (chatStore.messagePage + 1), (response) => {
     if(response.status === "OK") {
       if(response.messages.length > 0) {
-        chatStore.messages.push(...response.messages)
+        chatStore.messages = [...response.messages, ...chatStore.messages]
         chatStore.messagePage++
       }
     }
@@ -150,6 +151,7 @@ const createMessage = (message) => {
   socket.emit("message:new", chatStore.chat._id, message.content, message.reply, (response) => {
     if(response.status === "OK") {
       chatStore.messages.push(response.message)
+      messagesComponent.value.goDown()
       setLastMessage(response.message, chatStore.chat._id)
     }
   })
@@ -166,8 +168,26 @@ const deleteMessage = (mesId) => {
 
 <template>
   <div class="home-container">
-    <SideBar :class="chatStore.chat._id ? 'sbar': 'sbar-active'" :chats="chatStore.chatsFiltered" :selectedChat="chatStore.chat._id" :userId="userStore.user.id" @selectChat="selectChat" @createChat="createChat" @deleteChat="deleteChat"/>
-    <Messages :class="chatStore.chat._id ? 'messages-active': 'messages'" :messages="chatStore.messages" :user="userStore.user.id" :chat="chatStore.chat" @messageNew="createMessage" @messageDelete="deleteMessage" @back="back" @getMessages="getMessages"/>
+    <SideBar 
+    :class="chatStore.chat._id ? 'sbar': 'sbar-active'"
+    :chats="chatStore.chatsFiltered"
+    :selectedChat="chatStore.chat._id"
+    :userId="userStore.user.id"
+    @selectChat="selectChat"
+    @createChat="createChat"
+    @deleteChat="deleteChat"
+    />
+    <Messages 
+    :class="chatStore.chat._id ? 'messages-active': 'messages'"
+    :messages="chatStore.messages"
+    :user="userStore.user.id"
+    :chat="chatStore.chat"
+    @messageNew="createMessage"
+    @messageDelete="deleteMessage"
+    @back="back"
+    @getMessages="getMessages"
+    ref="messagesComponent"
+    />
   </div>
 </template>
 

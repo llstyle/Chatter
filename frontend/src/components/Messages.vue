@@ -60,6 +60,7 @@
     user: String,
     chat: Object
   })
+
   const emit = defineEmits(['messageNew', 'messageDelete', 'back', 'getMessages'])
 
   const messageList = ref()
@@ -103,12 +104,11 @@
       messageList.value.scrollTop = messageList.value.scrollHeight
     }
   })
-  watch(() => props.messages, async () => {
-    if(props.messages.length > 0) {
-      await nextTick()
-      messageList.value.scrollTop = messageList.value.scrollHeight
-    }
-  }, {deep: true})
+  const goDown = async () => {
+    await nextTick()
+    messageList.value.scrollTop = messageList.value.scrollHeight
+  }
+  defineExpose({ goDown })
 </script>
 
 <style scoped lang="css" src="@/assets/styles/messages.css"></style>
