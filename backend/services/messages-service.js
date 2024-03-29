@@ -20,7 +20,8 @@ class MessagesService {
 
         await Message.updateMany({ viewed: { "$ne": user}, chat}, { $push: { viewed: user } })
         
-        const messages = await Message.find({chat}).limit(limit).skip(((page - 1) * limit))
+        const messages = await Message.find({chat})
+        .limit(limit).skip(((page - 1) * limit))
         .populate("owner", "firstname lastname")
         .populate("replyMessage", "_id content")
 
