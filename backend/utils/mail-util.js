@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-class MailService {
+class MailUtil {
 
     constructor() {
         this.transporter = nodemailer.createTransport({
@@ -30,4 +30,4 @@ class MailService {
     }
 }
 
-export default new MailService();
+export default new MailUtil();

@@ -2,7 +2,7 @@ import express from "express";
 import UserController from "../controller/UserController.js";
 const router = express.Router();
 import auth from "../middlewares/auth.js"
-import { loginValidator, registerValidator } from "../validations/register.js";
+import { loginValidator, registerValidator } from "../validations/auth.js";
 
 router.get("/", (req, res) => {
     res.send("Hello world")

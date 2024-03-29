@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import DeviceToken from '../models/DeviceToken.js';
 
 class DeviceService {

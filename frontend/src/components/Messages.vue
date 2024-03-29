@@ -3,7 +3,7 @@
     <div class="messages-container" v-if="chat._id">
       <MessageHeader @back="emit('back')" :chat="chat" />
       <div class="message-list" ref="messageList">
-        
+        <div v-intersection="getMessages" class="observer"></div>
         <div v-for="message in messages" :key="message._id" class="message-main" :id="message._id">
           <div class="message" :class="{ 'sent': message.owner._id === user }">
             <div class="reply-container" v-if="message.replyMessage?._id">
@@ -50,7 +50,9 @@
   import { nextTick, onMounted, ref, watch } from 'vue';
   import MessageHeader from './MessageHeader.vue';
   import markdownit from 'markdown-it'
+  import { useChatStore } from '@/stores/chat.store';
 
+  const chatStore = useChatStore()
   const markdown = markdownit({html:false, linkify: true, typographer: true})
 
   const props = defineProps({
@@ -58,7 +60,7 @@
     user: String,
     chat: Object
   })
-  const emit = defineEmits(['messageNew', 'messageDelete', 'back'])
+  const emit = defineEmits(['messageNew', 'messageDelete', 'back', 'getMessages'])
 
   const messageList = ref()
   
@@ -70,6 +72,10 @@
   const showOptions = (messageId) => {
     showOptionsId.value = showOptionsId.value === messageId ? null : messageId;
   };
+  const getMessages = () => {
+    chatStore.messagePage++
+    emit("getMessages", chatStore.messagePage)
+  }
   const sendMessage = () => {
     if(props.user && props.chat._id && content.value) {
         emit("messageNew", { content: content.value, reply: reply.value.mesId })

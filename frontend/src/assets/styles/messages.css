@@ -1,3 +1,7 @@
+.observer {
+  width: 100%;
+  height: 4px;
+}
 .messages-container {
     display: flex;
     flex-direction: column;

@@ -106,10 +106,23 @@ socket.on("connect_error", (err) => {
 });
 
 const selectChat = (chatSelected) => {
-  socket.emit("messages:get", chatSelected._id, (response) => {
+  socket.emit("messages:get", chatSelected._id, chatStore.messagePage, (response) => {
     if(response.status === "OK") {
       chatStore.chat = chatSelected
       chatStore.messages = response.messages
+      chatStore.messagePage = 1
+
+      const chat = chatStore.chats.find(chat => chat._id === chatStore.chat._id)
+      chat.unviewed = 0
+    }
+  })
+}
+const getMessages = (page) => {
+  socket.emit("messages:get", chatStore.chat._id, (chatStore.messagePage + 1), (response) => {
+    if(response.status === "OK") {
+      chatStore.chat = chatSelected
+      chatStore.messages.push(...response.messages)
+      chatStore.messagePage++
 
       const chat = chatStore.chats.find(chat => chat._id === chatStore.chat._id)
       chat.unviewed = 0
@@ -156,7 +169,7 @@ const deleteMessage = (mesId) => {
 <template>
   <div class="home-container">
     <SideBar :class="chatStore.chat._id ? 'sbar': 'sbar-active'" :chats="chatStore.chatsFiltered" :selectedChat="chatStore.chat._id" :userId="userStore.user.id" @selectChat="selectChat" @createChat="createChat" @deleteChat="deleteChat"/>
-    <Messages :class="chatStore.chat._id ? 'messages-active': 'messages'" :messages="chatStore.messages" :user="userStore.user.id" :chat="chatStore.chat" @messageNew="createMessage" @messageDelete="deleteMessage" @back="back" />
+    <Messages :class="chatStore.chat._id ? 'messages-active': 'messages'" :messages="chatStore.messages" :user="userStore.user.id" :chat="chatStore.chat" @messageNew="createMessage" @messageDelete="deleteMessage" @back="back" @getMessages="getMessages"/>
   </div>
 </template>
 

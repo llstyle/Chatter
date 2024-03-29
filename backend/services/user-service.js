@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import Activation from "../models/Activation.js";
-import mailService from "../services/mail-service.js";
 import tokenService from "../services/token-service.js";
+import mailUtil from "../utils/mail-util.js"
 
 import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from 'uuid';
@@ -31,7 +31,7 @@ class UserService {
         const activationLink = uuidv4();
         await Activation.create({ user: user._id, activationLink })
 
-        await mailService.sendActivationMail(email, `${process.env.API_URL}/auth/activate/${activationLink}`)
+        await mailUtil.sendActivationMail(email, `${process.env.API_URL}/auth/activate/${activationLink}`)
     }
 
     async activate(link) {

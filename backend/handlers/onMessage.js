@@ -1,112 +1,56 @@
-import Message from "../models/Message.js"
-import Chat from "../models/Chat.js"
-import Token from "../models/Token.js"
-import { sendMessage } from "../services/notification-service.js"
-import DeviceToken from "../models/DeviceToken.js"
+import messagesService from "../services/messages-service.js"
+import SocketError from "../exceptions/socket-error.js"
 const messagesHandlers = async (socket) => {
 
-    socket.on("messages:get", async (chatid, callback) => {
+    socket.on("messages:get", async (chatid, page, callback) => {
         try {
-            const chat = await Chat.findOne({_id: chatid, users: {"$in": [socket.user.user_id]}})
-            if(!chat) {
-                throw {message: "doesnt have permissions", code: 400}
-            }
-
-            await Message.updateMany({ viewed: { "$ne": socket.user.user_id}, chat}, { $push: { viewed: socket.user.user_id } })
-            
-            const messages = await Message.find({chat})
-            .populate("owner", "firstname lastname")
-            .populate("replyMessage", "_id content")
-
-            callback({
-                status: "OK",
-                messages
-            });
+            const messages = await messagesService.getMessages(chatid, page, socket.user.user_id)
+            callback({ status: "OK", messages});
         } catch(e) {
-            let message = "Any troubles on server"
-            if(e.code === 400) {
-                message = e.message
-            }
-            callback({
+            console.log(e)
+            callback({ 
                 status: "NOK",
-                message: message
+                message: e instanceof SocketError ? "Any troubles on server": e.message 
             });
         }
     })
     socket.on("message:new", async (chatid, content, replyMessage, callback) => {
         try {
-            const chat = await Chat.findOne({_id: chatid, users: {"$in": [socket.user.user_id]}})
-            if(!chat) {
-                throw {message: "doesnt have permissions", code: 400}
-            }
+            const message = await messagesService.createMessage(chatid, content, replyMessage, socket.user.user_id)
 
-            if(replyMessage) {
-                replyMessage = await Message.findOne({_id: replyMessage, chat: chat._id})
-                if(!replyMessage) {
-                    throw {message: "doesnt have permissions", code: 400}
-                }
-            }
-
-            let message = await Message.create({
-                owner: socket.user.user_id,
-                chat,
-                content,
-                replyMessage,
-                viewed: [socket.user.user_id]
-            })
-            message = await message.populate("owner", "firstname lastname")
             socket.to(message.chat.id.toString()).emit("message:new", message)
 
-            const tokens = await DeviceToken.find({ $and: [{user: chat.users}, {user: {$ne: socket.user.user_id}}] }, "deviceToken").distinct('deviceToken')
-            sendMessage(message, tokens)
-
-            callback({
-                status: "OK",
-                message
-            });
+            callback({ status: "OK", message });
         } catch(e) {
-            callback({
+            console.log(e)
+            callback({ 
                 status: "NOK",
-                message: "Any troubles on server"
+                message: e instanceof SocketError ? "Any troubles on server": e.message 
             });
         }
     }),
     socket.on("message:delete", async (messageId, callback) => {
         try {
-            const message = await Message.findOne({_id: messageId, owner: socket.user.user_id})
-
-            if(!message) {
-                throw {message: "doesnt have permissions", code: 400}
-            }
-
-            await message.deleteOne()
-
-            const last = await Message.findOne({chat: message.chat}, {}, { sort: {createdAt: -1} })
+            const [message, last] = await messagesService.deleteMessage(messageId, socket.user.user_id)
 
             socket.to(message.chat.toString()).emit("message:delete", {last, message})
 
-            callback({
-                status: "OK",
-                message: message._id
-            });
+            callback({ status: "OK", message: message._id});
         } catch(e) {
-            callback({
+            callback({ 
                 status: "NOK",
-                message: "Any troubles on server"
+                message: e instanceof SocketError ? "Any troubles on server": e.message 
             });
         }
     }),
     socket.on("message:view", async (messageId, callback) => {
         try {
-            const message = await Message.findOneAndUpdate({_id: messageId }, { $addToSet: {viewed: socket.user.user_id} }, {new: true})
-            callback({
-                status: "OK",
-                message
-            });
+            const message = await messagesService.viewMessage(messageId, user)
+            callback({ status: "OK", message });
         } catch {
-            callback({
+            callback({ 
                 status: "NOK",
-                message: "Any troubles on server"
+                message: e instanceof SocketError ? "Any troubles on server": e.message 
             });
         }
     })
