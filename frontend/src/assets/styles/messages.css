@@ -22,7 +22,7 @@
 }
 @media (max-width:960px) {
     .message-main {
-        max-width: 100%;
+        max-width: 80%;
     }
 }
 .message {

@@ -118,12 +118,14 @@ const selectChat = (chatSelected) => {
     }
   })
 }
-const getMessages = (page) => {
+const getMessages = () => {
   socket.emit("messages:get", chatStore.chat._id, (chatStore.messagePage + 1), (response) => {
     if(response.status === "OK") {
       if(response.messages.length > 0) {
-        chatStore.messages = [...response.messages, ...chatStore.messages]
+        const last = chatStore.messages.at(0)
+        chatStore.messages.unshift(...response.messages)
         chatStore.messagePage++
+        messagesComponent.value.goLast(last._id)
       }
     }
   })

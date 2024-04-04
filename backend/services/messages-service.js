@@ -8,7 +8,7 @@ class MessagesService {
     async getMessages(chatid, page, user) {
         const limit = 50
 
-        if(!chatid || !page) {
+        if(!chatid) {
             throw SocketError.BadRequest("chat is required")
         }
 
@@ -21,12 +21,13 @@ class MessagesService {
         await Message.updateMany({ viewed: { "$ne": user}, chat}, { $push: { viewed: user } })
         
         const messages = await Message.find({chat})
-        .limit(limit).skip(((page - 1) * limit))
         .sort({ createdAt: -1 })
+        .limit(limit).skip(((Math.max(1, page) - 1) * limit))
         .populate("owner", "firstname lastname")
         .populate("replyMessage", "_id content")
+        .lean()
 
-        return messages
+        return messages.reverse()
     }
     async createMessage(chatid, content, replyMessage, user) {
         const chat = await Chat.findOne({_id: chatid, users: {"$in": [user]}})

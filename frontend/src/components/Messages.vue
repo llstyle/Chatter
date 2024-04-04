@@ -74,8 +74,7 @@
     showOptionsId.value = showOptionsId.value === messageId ? null : messageId;
   };
   const getMessages = () => {
-    chatStore.messagePage++
-    emit("getMessages", chatStore.messagePage)
+    emit("getMessages")
   }
   const sendMessage = () => {
     if(props.user && props.chat._id && content.value) {
@@ -97,7 +96,11 @@
   }
   const scrollTo = async (id) => {
     await nextTick()
-    document.getElementById(id).scrollIntoView()
+    try {
+      document.getElementById(id).scrollIntoView({ behavior: "smooth" })
+    } catch {
+      console.log("out of messges")
+    }
   }
   onMounted(async () => {
     if (props.chat.id) {
@@ -108,7 +111,15 @@
     await nextTick()
     messageList.value.scrollTop = messageList.value.scrollHeight
   }
-  defineExpose({ goDown })
+  const goLast = async (last) => {
+    await nextTick()
+    try {
+      document.getElementById(last).scrollIntoView()
+    } catch {
+      console.log("out of messges")
+    }
+  }
+  defineExpose({ goDown, goLast })
 </script>
 
 <style scoped lang="css" src="@/assets/styles/messages.css"></style>
