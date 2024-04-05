@@ -68,9 +68,9 @@
   justify-content: space-between;
 }
 .dropdown {
-  r: 0;
+
   position: absolute;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   display: flex;
   flex-direction: column;

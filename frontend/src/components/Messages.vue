@@ -6,8 +6,8 @@
         <div v-intersection="getMessages" class="observer"></div>
         <div v-for="message in messages" :key="message._id" class="message-main" :id="message._id">
           <div class="message" :class="{ 'sent': message.owner._id === user }">
-            <div class="reply-container" v-if="message.replyMessage?._id">
-              <div class="reply-message" @click="scrollTo(message.replyMessage._id)">{{ message.replyMessage.content }}</div>
+            <div class="reply-container" v-if="message.replyMessage?._id" @click="scrollTo(message.replyMessage._id)">
+              <div class="reply-message">{{ message.replyMessage.content }}</div>
             </div>
             <div class="content">
               <div class="message-content" v-html="markdown.render(message.content)"></div>
@@ -35,7 +35,7 @@
         </div>
         <div class="message-input">
           <textarea v-model="content" required placeholder="Type a message" @keydown.enter.exact.prevent="sendMessage"></textarea>
-          <button @click.prevent="sendMessage" style="background-color: black;color: chartreuse;font-size: x-large;">&#8680;</button>
+          <p class="back"><span @click.prevent="sendMessage" >&#8594;</span></p>
         </div>  
       </div>
     </div>
