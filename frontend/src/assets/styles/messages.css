@@ -40,8 +40,9 @@
   word-wrap: break-word;
   font-size: 1em;
   display: block;
-  word-wrap: wrap;
-  word-break: break-all;
+  word-break: break-word;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .sent {
   background-color: chartreuse;
