@@ -16,7 +16,15 @@ export default function notification() {
     const messaging = getMessaging();
     
     const getDevice = async () => {
-        return await getToken(messaging, { vapidKey: import.meta.env.VITE_VAPID_KEY})
+      Notification.requestPermission()
+      .then(async (permission) => {
+        if (permission === "granted") {
+          return await getToken(messaging, { vapidKey: import.meta.env.VITE_VAPID_KEY})
+        } else {
+          console.log("Unable to get permission to notify.");
+        }
+      });
+        
     }
     return { getDevice } 
 }

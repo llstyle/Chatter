@@ -19,13 +19,11 @@ const userStore = useUserStore()
 const login = async () => {
   try {
     const deviceToken = await getDevice()
-    console.log(deviceToken)
     const response = await axios.post('/auth/login', {email: loginData.email, password: loginData.password, deviceToken}, { withCredentials: true });
     userStore.user.token = response.data.accessToken
     userStore.startRefreshTokenTimer()
     await router.push({ name: "home" })
   } catch (error) {
-    alert(error.response.data.message)
     console.error('Login failed:', error);
   }
 };

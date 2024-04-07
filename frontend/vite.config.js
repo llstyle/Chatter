@@ -21,6 +21,7 @@ export default defineConfig({
       description: 'Just chatter',
       theme_color: 'black',
       background_color: 'black',
+      display: 'fullscreen',
       orientation: 'portrait',
       icons: [
         {

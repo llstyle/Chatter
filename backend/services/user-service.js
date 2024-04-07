@@ -57,7 +57,11 @@ class UserService {
         }
 
         const tokens = tokenService.generateTokens({user_id: user._id, username: user.username, email: user.email});
-        await deviceService.saveToken(user._id, deviceToken)
+
+        if (deviceToken) {
+            await deviceService.saveToken(user._id, deviceToken)
+        }
+        
         await tokenService.saveToken(user._id, tokens.refreshToken);
 
         return tokens
