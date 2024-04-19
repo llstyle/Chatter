@@ -47,7 +47,7 @@ const messagesHandlers = async (socket) => {
         try {
             const message = await messagesService.viewMessage(messageId, user)
             callback({ status: "OK", message });
-        } catch {
+        } catch(e) {
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
