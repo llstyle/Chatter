@@ -1,3 +1,4 @@
+import logger from "../utils/logger.js"
 import messagesService from "../services/messages-service.js"
 import SocketError from "../exceptions/socket-error.js"
 const messagesHandlers = async (socket) => {
@@ -7,7 +8,7 @@ const messagesHandlers = async (socket) => {
             const messages = await messagesService.getMessages(chatid, page, socket.user.user_id)
             callback({ status: "OK", messages});
         } catch(e) {
-            console.log(e)
+            logger.error(e)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -22,7 +23,7 @@ const messagesHandlers = async (socket) => {
 
             callback({ status: "OK", message });
         } catch(e) {
-            console.log(e)
+            logger.error(e)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -37,6 +38,7 @@ const messagesHandlers = async (socket) => {
 
             callback({ status: "OK", message: message._id});
         } catch(e) {
+            logger.error(e)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -48,6 +50,7 @@ const messagesHandlers = async (socket) => {
             const message = await messagesService.viewMessage(messageId, user)
             callback({ status: "OK", message });
         } catch(e) {
+            logger.error(e)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 

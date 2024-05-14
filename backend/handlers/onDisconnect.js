@@ -1,3 +1,4 @@
+import logger from "../utils/logger.js"
 import User from "../models/User.js"
 import Chat from "../models/Chat.js"
 
@@ -16,7 +17,7 @@ const disconnectHandler = async (socket) => {
                 await User.findOneAndUpdate({_id: socket.user.user_id}, {online: false})
             }
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         }
     });
 }

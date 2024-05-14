@@ -1,7 +1,8 @@
+import logger from '../utils/logger.js';
 import ApiError from '../exceptions/api-error.js'
 
 export default (err, req, res, next) => {
-    console.log(err);
+    logger.error(err);
     if (err instanceof ApiError) {
         return res.status(err.status).json({message: err.message, errors: err.errors})
     }
