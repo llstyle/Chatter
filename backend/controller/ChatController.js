@@ -1,4 +1,5 @@
 import Chat from "../models/Chat.js";
+import logger from "../utils/logger.js";
 
 class ChatController {
     async createChat(req, res) {
@@ -21,7 +22,7 @@ class ChatController {
             return;
 
         } catch (e) {
-            console.log(e)
+            logger.error(e.message)
             res.status(500).send("Any troubles on server")
         }
     }
@@ -46,6 +47,7 @@ class ChatController {
             return;
 
         } catch (e) {
+            logger.error(e.message)
             res.status(500).send("Any troubles on server")
         }
     }
@@ -56,7 +58,7 @@ class ChatController {
             return;
 
         } catch (e) {
-            console.log(e)
+            logger.error(e.message)
             res.status(500).send("Any troubles on server")
         }
     }

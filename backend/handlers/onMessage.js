@@ -8,7 +8,7 @@ const messagesHandlers = async (socket) => {
             const messages = await messagesService.getMessages(chatid, page, socket.user.user_id)
             callback({ status: "OK", messages});
         } catch(e) {
-            logger.error(e)
+            logger.error(e.message)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -23,7 +23,7 @@ const messagesHandlers = async (socket) => {
 
             callback({ status: "OK", message });
         } catch(e) {
-            logger.error(e)
+            logger.error(e.message)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -38,7 +38,7 @@ const messagesHandlers = async (socket) => {
 
             callback({ status: "OK", message: message._id});
         } catch(e) {
-            logger.error(e)
+            logger.error(e.message)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 
@@ -47,10 +47,10 @@ const messagesHandlers = async (socket) => {
     }),
     socket.on("message:view", async (messageId, callback) => {
         try {
-            const message = await messagesService.viewMessage(messageId, user)
+            const message = await messagesService.viewMessage(messageId, socket.user.user_id)
             callback({ status: "OK", message });
         } catch(e) {
-            logger.error(e)
+            logger.error(e.message)
             callback({ 
                 status: "NOK",
                 message: e instanceof SocketError ? "Any troubles on server": e.message 

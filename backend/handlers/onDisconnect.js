@@ -17,7 +17,7 @@ const disconnectHandler = async (socket) => {
                 await User.findOneAndUpdate({_id: socket.user.user_id}, {online: false})
             }
         } catch (e) {
-            logger.error(e)
+            logger.error(e.message)
         }
     });
 }
